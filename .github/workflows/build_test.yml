@@ -1,0 +1,88 @@
+# You can have multiple workflows that are triggered by different
+# events (e.g., a workflow that runs on branch pushes, versus a
+# workflow that runs when a GitHub issue is created). Give your
+# workflow a descriptive name so that you know what it is.
+name: build_test
+
+# What is the event that triggers this workflow? Options include
+# push, pull_request, create, issues, etc. This configuration says
+# that you should run on pushes to the main branch (i.e., after a PR
+# is merged), or when a pull request is created to merge into main.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    # Configuring this means that your PRs will get a GitHub comment
+    # from Coveralls with your coverage.
+    branches:
+      - main
+
+# A list of jobs to run as part of the workflow
+jobs:
+
+  # Each job gets a name. This one builds/tests all branches.
+  build_test:
+
+    # Provide a runner. Options are listed on GitHub, but include
+    # windows, ubuntu, and macos (latest, as well as specific versions)
+    runs-on: ubuntu-latest
+
+    # The actual workflow steps!
+    steps:
+      # First, check out the repository for the current branch.
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Build the backend Docker image
+      - name: Build backend Docker image
+        run: docker build -t backend-app ./backend
+
+      # Run unit tests inside the Docker container
+      - name: Run tests in Docker
+        run: |
+          docker run --name backend-container backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
+          docker cp backend-container:/app/.coverage backend/.coverage
+          docker rm backend-container
+
+      # Generate the coverage report
+      - name: Generate coverage report
+        run: |
+          docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage report
+          docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage lcov
+
+      # Report code coverage to Coveralls
+      - name: Report code coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-path: backend
+          path-to-lcov: backend/coverage.lcov
+          flag-name: run-${{ join(matrix.*, ' - ') }}
+          parallel: true
+
+      # If there are any other steps in order for your tests to
+      # run successfully, you can add those steps here!
+
+      # Next step: run pylint. Anything less than 10/10 will fail.
+      #            Once we've covered pylint in lecture, uncomment
+      #            the following lines.
+      # - name: Lint with pylint
+      #   run: |
+      #     pylint entropy/**/*.py
+
+  # After all the parallel matrix runs for build_test are done
+  # for the various Python versions, we run this job to send the
+  # final code coverage to Coveralls.
+  finish:
+    # This job requires that build_test be finished before it
+    # can run.
+    needs: build_test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
