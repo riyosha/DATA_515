@@ -31,6 +31,7 @@ jobs:
     # The actual workflow steps!
     steps:
       # First, check out the repository for the current branch.
+      - name: Checkout Repository
       - uses: actions/checkout@v3
 
     # Build the backend Docker image
@@ -40,16 +41,14 @@ jobs:
     # Run unit tests inside the Docker container
       - name: Run tests in Docker
         run: |
-          docker run --rm backend-app conda run -n letterboxd coverage run -m unittest discover -s tests
-          docker run --rm backend-app conda run -n letterboxd coverage report
-          docker run --rm backend-app conda run -n letterboxd coverage lcov
+          docker run --name backend-container backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
+          docker cp backend-container:/app/.coverage backend/.coverage
+          docker rm backend-container
 
-    # Copy coverage data from the container to GitHub Actions runner
-      - name: Extract coverage report
+      - name: Generate coverage report
         run: |
-          CONTAINER_ID=$(docker create backend-app)
-          docker cp $CONTAINER_ID:/app/coverage.lcov backend/coverage.lcov
-          docker rm $CONTAINER_ID
+          docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage report
+          docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage lcov
 
     # Report code coverage to Coveralls
       - name: Report code coverage to Coveralls
@@ -60,7 +59,7 @@ jobs:
           path-to-lcov: backend/coverage.lcov
           flag-name: run-${{ join(matrix.*, ' - ') }}
           parallel: true
-      
+
       # If there are any other steps in order for your tests to
       # run successfully, you can add those steps here!
 
@@ -82,8 +81,8 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@v2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
