@@ -28,69 +28,41 @@ jobs:
     # windows, ubuntu, and macos (latest, as well as specific versions)
     runs-on: ubuntu-latest
 
-    # In order to get Conda environments to work properly, we need to
-    # tell the runner to start up the bash shell in a way that respects
-    # the changes Conda makes to bash profile files.
-    # More at:
-    # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
-    defaults:
-      run:
-        shell: bash -el {0}
-
-    # We specify all versions of Python that we want to validate.
-    # GitHub will run the tests for each of these Python versions.
-    strategy:
-      matrix:
-        python-version: ["3.8"]
-
     # The actual workflow steps!
     steps:
       # First, check out the repository for the current branch.
       - uses: actions/checkout@v3
 
-      # Then set up Python with a python version from the matrix.
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+    # Build the backend Docker image
+      - name: Build backend Docker image
+        run: docker build -t backend-app ./backend
 
-      # This is an Action published by the Conda team to get your
-      # Conda environment set up using your environment.yml file.
-      # More at https://github.com/marketplace/actions/setup-miniconda
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          # Use the environment name from your environment.yml file
-          activate-environment: letterboxd
-          # The name of the environment file you want conda to use
-          environment-file: backend/environment.yml
-          # Whether you want conda to automatically update the conda
-          # version (helpful when some runners have old versions of
-          # conda)
-          auto-update-conda: true
-          # Which version of python you want conda to use
-          python-version: ${{ matrix.python-version }}
-          # We don't need the base environment, so don't activate it
-          auto-activate-base: false
-
-      # You don't normally need test coverage information when
-      # developing locally - we just want it in CI - so we install
-      # it here instead of in our environment file (which we also
-      # use locally).
-      - name: Install additional development dependencies
+    # Run unit tests inside the Docker container
+      - name: Run tests in Docker
         run: |
-          conda install --yes coverage
+          docker run --rm backend-app coverage run -m unittest discover -s tests
+          docker run --rm backend-app coverage report
+          docker run --rm backend-app coverage lcov
+
+    # Copy coverage data from the container to GitHub Actions runner
+      - name: Extract coverage report
+        run: |
+          CONTAINER_ID=$(docker create backend-app)
+          docker cp $CONTAINER_ID:/app/coverage.lcov backend/coverage.lcov
+          docker rm $CONTAINER_ID
+
+    # Report code coverage to Coveralls
+      - name: Report code coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-path: backend
+          path-to-lcov: backend/coverage.lcov
+          flag-name: run-${{ join(matrix.*, ' - ') }}
+          parallel: true
       
       # If there are any other steps in order for your tests to
       # run successfully, you can add those steps here!
-
-      # Next step: run the unit tests with code coverage.
-      - name: Unit tests
-        run: |
-          cd backend
-          coverage run -m unittest discover
-          coverage report
-          coverage lcov
 
       # Next step: run pylint. Anything less than 10/10 will fail.
       #            Once we've covered pylint in lecture, uncomment
@@ -99,20 +71,6 @@ jobs:
       #   run: |
       #     pylint entropy/**/*.py
 
-      # Lastly: report code coverage to Coveralls.
-      - name: Report code coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: backend
-          path-to-lcov: backend/coverage.lcov
-          # The following two options are needed for "parallel"
-          # runs - ie if you have a matrix of python versions.
-          # This holds off on reporting code coverage to
-          # coveralls until all runs are done. If you don't have
-          # a matrix, this isn't needed.
-          flag-name: run-${{ join(matrix.*, ' - ') }}
-          parallel: true
 
   # After all the parallel matrix runs for build_test are done
   # for the various python versions, we run this job to send the
