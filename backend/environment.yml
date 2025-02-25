@@ -16,3 +16,7 @@ dependencies:
   - wheel=0.44.0
   - xz=5.6.4
   - zlib=1.2.13
+  - pip
+  - pip:
+      - coverage
+      - unittest2
