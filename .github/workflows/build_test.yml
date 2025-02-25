@@ -1,12 +1,12 @@
 # You can have multiple workflows that are triggered by different
-# events (eg a workflow that runs on branch pushes, versus a
+# events (e.g., a workflow that runs on branch pushes, versus a
 # workflow that runs when a GitHub issue is created). Give your
 # workflow a descriptive name so that you know what it is.
 name: build_test
 
 # What is the event that triggers this workflow? Options include
 # push, pull_request, create, issues, etc. This configuration says
-# that you should run on pushes to the main branch (ie after a PR
+# that you should run on pushes to the main branch (i.e., after a PR
 # is merged), or when a pull request is created to merge into main.
 on:
   push:
@@ -32,25 +32,26 @@ jobs:
     steps:
       # First, check out the repository for the current branch.
       - name: Checkout Repository
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
 
-    # Build the backend Docker image
+      # Build the backend Docker image
       - name: Build backend Docker image
         run: docker build -t backend-app ./backend
 
-    # Run unit tests inside the Docker container
+      # Run unit tests inside the Docker container
       - name: Run tests in Docker
         run: |
           docker run --name backend-container backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
           docker cp backend-container:/app/.coverage backend/.coverage
           docker rm backend-container
 
+      # Generate the coverage report
       - name: Generate coverage report
         run: |
           docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage report
           docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage lcov
 
-    # Report code coverage to Coveralls
+      # Report code coverage to Coveralls
       - name: Report code coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
@@ -70,9 +71,8 @@ jobs:
       #   run: |
       #     pylint entropy/**/*.py
 
-
   # After all the parallel matrix runs for build_test are done
-  # for the various python versions, we run this job to send the
+  # for the various Python versions, we run this job to send the
   # final code coverage to Coveralls.
   finish:
     # This job requires that build_test be finished before it
