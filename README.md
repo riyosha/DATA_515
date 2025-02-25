@@ -1,3 +1,7 @@
+![GitHub Actions Workflow](https://github.com/riyosha/DATA_515/actions/workflows/build_test.yml/badge.svg)
+![Coverage Status](https://coveralls.io/repos/github/riyosha/DATA_515/badge.svg)
+
+
 # DATA 515 Group Project
 Welcome! This is the repository for our group's final project for DATA 515: Software Design for Data Scientists. 
 
