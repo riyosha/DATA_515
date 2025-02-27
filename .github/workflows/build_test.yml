@@ -21,8 +21,8 @@ on:
 # A list of jobs to run as part of the workflow
 jobs:
 
-  # Each job gets a name. This one builds/tests all branches.
-  build_test:
+  # Each job gets a name. This one builds/tests the backend.
+  build_test_backend:
 
     # Provide a runner. Options are listed on GitHub, but include
     # windows, ubuntu, and macos (latest, as well as specific versions)
@@ -39,26 +39,24 @@ jobs:
         run: docker build -t backend-app ./backend
 
       # Run unit tests inside the Docker container
-      - name: Run tests in Docker
+      - name: Run backend tests in Docker
         run: |
           docker run --name backend-container backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
           docker cp backend-container:/app/.coverage backend/.coverage
           docker rm backend-container
 
-      # Generate the coverage report
-      - name: Generate coverage report
+      - name: Generate backend coverage report
         run: |
           docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage report
           docker run --rm -v ${{ github.workspace }}/backend:/app backend-app conda run -n letterboxd coverage lcov
 
       # Report code coverage to Coveralls
-      - name: Report code coverage to Coveralls
+      - name: Upload backend coverage to Coveralls
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          base-path: backend
           path-to-lcov: backend/coverage.lcov
-          flag-name: run-${{ join(matrix.*, ' - ') }}
+          flag-name: backend
           parallel: true
 
       # If there are any other steps in order for your tests to
@@ -71,13 +69,45 @@ jobs:
       #   run: |
       #     pylint entropy/**/*.py
 
-  # After all the parallel matrix runs for build_test are done
-  # for the various Python versions, we run this job to send the
-  # final code coverage to Coveralls.
+  # Frontend Test Job
+  build_test_frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Set up Node.js for frontend testing
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      # Install frontend dependencies
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      # Run frontend unit tests
+      - name: Run frontend tests
+        run: |
+          cd frontend
+          npm test -- --coverage
+
+      # Upload frontend coverage report
+      - name: Upload frontend coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: frontend/coverage/lcov.info
+          flag-name: frontend
+          parallel: true
+
+  # Final job to complete Coveralls reporting
   finish:
-    # This job requires that build_test be finished before it
-    # can run.
-    needs: build_test
+    needs: [build_test_backend, build_test_frontend]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
