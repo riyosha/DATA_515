@@ -8,6 +8,24 @@ To achieve this, we had to explore different generative AI and NLP technologies 
 
 ## (i) Summarization:
 
+To generate a meaningful summary of the most popular reviews of a movie, we explored two different approaches: Mistral 7B and Google Gemini Pro.
+
+### Mistral 7B (via Hugging Face Transformers)
+Mistral 7B is an open-weight transformer model optimized for efficiency and performance. We used the Hugging Face transformers library to generate summaries, but the inference time was too slow, taking several seconds per review, which made it impractical for real-time processing. While the model allowed full control over fine-tuning and customization, achieving high-quality summaries required extensive optimization. Maintaining the necessary infrastructure for efficient inference also increased complexity. These factors made Mistral 7B unsuitable for our needs.
+
+### Google Generative AI Python SDK (for Gemini Pro)
+Google Gemini Pro is a generative AI model optimized for natural language processing. We used its Python SDK to generate summaries with a structured prompt that guided the model to focus on key themes, emotions, and audience reactions. This approach produced fluent, coherent summaries with minimal post-processing. The inference time was nearly instant, making it efficient for handling large volumes of reviews. While the response format varied at times, careful prompt engineering and targeted error handling ensured consistent outputs. Given its speed, high-quality summaries, and low infrastructure overhead, Gemini Pro was the best choice for our needs.
+
+| Feature               | Mistral 7B | Google Gemini Pro |
+|-----------------------|-----------|------------------|
+| **Author**           | Mistral AI | Google          |
+| **Summary**         | Open-source LLM | API-based generative AI for text processing |
+| **Fine-tuning**     | Required for optimal results | Not required |
+| **Inference Time**  | Too slow for real-time use | Nearly instant |
+| **Output Quality**  | Required additional optimization | Fluent and coherent with minimal processing |
+| **Error Handling**  | Predictable but required tuning | Required handling due to response variability |
+| **Control**        | Full control over model and infrastructure | Dependent on Google's API policies |
+| **Scalability**    | Infrastructure-dependent, complex to scale | Easy to scale with API-based access |
 
 
 ## (ii) Top Aspects Visualization
