@@ -26,6 +26,8 @@ cd DATA_515
 - After updating the file, rebuild the Docker containers.
 
 ### 3. Running the Application
+First ensure that you have a `.env` file at the root of the project to store secrets
+
 To start both the backend and frontend, run:
 ```sh
 docker-compose up --build
