@@ -38,6 +38,9 @@ jobs:
       - name: Build backend Docker image
         run: docker build -t backend-app ./backend
 
+      - name: Inject GEMINI API Key
+        run: echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+
       # Run unit tests inside the Docker container
       - name: Run backend tests in Docker
         run: |
