@@ -3,10 +3,10 @@ import os
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not GEMINI_API_KEY:
-    raise ValueError("Missing GEMINI_API_KEY! Set it in your .env file.")
+# if not GEMINI_API_KEY:
+#     raise ValueError("Missing GEMINI_API_KEY! Set it in your .env file.")
 
-print(f"Using Google Gemini API Key: {GEMINI_API_KEY[:5]}... (hidden for security)")
+# print(f"Using Google Gemini API Key: {GEMINI_API_KEY[:5]}... (hidden for security)")
 
 app = Flask(__name__)
 
