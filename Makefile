@@ -12,12 +12,12 @@ help:
 	@echo "ps                 - List running containers"
 	@echo "test-frontend      - Run frontend tests"
 	@echo "test-backend       - Run backend tests"
-	@echo "test               - Run all tests (frontend and backend)"
-	# @echo "coverage-frontend  - Run frontend tests with coverage"
-	# @echo "coverage-backend   - Run backend tests with coverage"
-	# @echo "coverage-backend-report - Generate backend coverage report"
-	# @echo "coverage           - Run all tests with coverage"
+	@echo "test               - Run all tests (frontend and backend)"	
+	@echo "coverage-frontend  - Run frontend tests with coverage"
+	@echo "coverage-backend   - Run backend tests with coverage"
+	@echo "coverage           - Run all tests with coverage"
 	@echo "lint-frontend      - Run frontend linting"
+	@echo "lint-fix-frontend  - Run frontend linting and fix issues"
 	@echo "lint-backend       - Run backend linting"
 	@echo "lint               - Run all linting (frontend and backend)"
 	@echo "shell-frontend     - Get a shell in the frontend container"
@@ -52,8 +52,12 @@ test-frontend:
 lint-frontend:
 	docker-compose exec frontend npm run lint
 
-# coverage-frontend:
-# 	docker-compose exec frontend npm test -- --coverage
+lint-fix-frontend:
+	docker-compose exec frontend npm run lint:fix
+
+coverage-frontend:
+	docker-compose exec frontend npm test -- --coverage
+	@echo "Frontend coverage report available in frontend/coverage/lcov-report/index.html"
 
 shell-frontend:
 	docker-compose exec frontend /bin/sh
@@ -62,16 +66,15 @@ shell-frontend:
 test-backend:
 	docker-compose exec backend conda run -n letterboxd python -m unittest discover -s tests
 
-# coverage-backend:
-# 	docker-compose exec backend conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
-# 	@echo "Run 'make coverage-backend-report' to see the coverage report"
-
-# coverage-backend-report:
-# 	docker-compose exec backend conda run -n letterboxd coverage report
-# 	docker-compose exec backend conda run -n letterboxd coverage html
+coverage-backend:
+	docker-compose exec backend conda run -n letterboxd coverage run -m unittest discover -s tests
+	docker-compose exec backend conda run -n letterboxd coverage report
+	@echo "Running backend coverage report..."
+	docker-compose exec backend conda run -n letterboxd coverage html
+	@echo "Backend coverage report available in backend/htmlcov/index.html"
 
 lint-backend:
-	docker-compose exec backend flake8
+	docker-compose exec backend conda run -n letterboxd pylint --output-format=colorized src/ tests/
 
 shell-backend:
 	docker-compose exec backend /bin/bash
@@ -79,7 +82,7 @@ shell-backend:
 # Combined commands
 test: test-backend test-frontend
 
-# coverage: coverage-frontend coverage-backend
+coverage: coverage-backend coverage-frontend
 
 lint: lint-frontend lint-backend
 
