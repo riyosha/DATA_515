@@ -4,7 +4,7 @@ channels:
   - https://repo.anaconda.com/pkgs/main
   - https://repo.anaconda.com/pkgs/r
 dependencies:
-  - astroid=3.3.8=py313hca03da5_0
+  - astroid
   - beautifulsoup4=4.12.3=py313hca03da5_0
   - brotli-python=1.0.9=py313h313beb8_9
   - bs4=4.12.3=py39hd3eb1b0_0
