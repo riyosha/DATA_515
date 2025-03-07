@@ -2,6 +2,7 @@ name: letterboxd
 channels:
   - defaults
 dependencies:
+  - bs4
   - ca-certificates=2024.12.31
   - libcxx=14.0.6
   - libffi=3.4.4
@@ -11,6 +12,7 @@ dependencies:
   - python=3.13.0
   - pylint=3.3.3
   - readline=8.2
+  - requests
   - setuptools=75.1.0
   - sqlite=3.45.3
   - tk=8.6.14
