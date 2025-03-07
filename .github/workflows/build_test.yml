@@ -38,6 +38,15 @@ jobs:
       - name: Build backend Docker image
         run: docker build -t backend-app ./backend
 
+      - name: Inject GEMINI API Key
+        run: echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+
+      # Run pylint on backend code
+      - name: Run pylint on backend
+        run: |
+          docker run --rm backend-app conda run -n letterboxd pylint src/ tests/
+        continue-on-error: true  # Optional: To prevent build failures initially
+
       # Run unit tests inside the Docker container
       - name: Run backend tests in Docker
         run: |
@@ -89,6 +98,13 @@ jobs:
         run: |
           cd frontend
           npm install
+
+      # Run ESLint on frontend code
+      - name: Run ESLint on frontend
+        run: |
+          cd frontend
+          npm run lint
+        continue-on-error: true  # Optional: To prevent build failures initially
 
       # Run frontend unit tests
       - name: Run frontend tests

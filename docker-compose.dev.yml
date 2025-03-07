@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  backend:
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_DEBUG=1
+      - FLASK_APP=src/main.py
+      - PYTHONUNBUFFERED=1
+    # Use the command that starts your Flask app in development mode
+    # Adjust this if your backend has a different startup command
+    command: conda run -n letterboxd python -m flask run --host=0.0.0.0 --port=5515 --reload
+
+  frontend:
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    # Most Vite/React setups use this command for development
+    command: npm run dev

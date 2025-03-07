@@ -8,7 +8,8 @@ dependencies:
   - ncurses=6.4
   - openssl=3.0.15
   - pip=24.2
-  - python=3.8.20
+  - python=3.13.0
+  - pylint=3.3.3
   - readline=8.2
   - setuptools=75.1.0
   - sqlite=3.45.3
@@ -18,5 +19,6 @@ dependencies:
   - zlib=1.2.13
   - pip
   - pip:
+      - flask 
       - coverage
       - unittest2
