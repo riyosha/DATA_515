@@ -12,7 +12,7 @@ class ScraperError(Exception):
     """Custom exception for scraper errors."""
 
 
-def validate_letterboxd_url(film_url):
+def validate_letterboxd_film_url(film_url):
     """Validates the Letterboxd film URL."""
     pattern = r"^https://letterboxd\.com/film/[\w-]+/$"
     return bool(re.match(pattern, film_url))
@@ -30,7 +30,7 @@ def fetch_reviews(url, headers):
 
 def scrape_reviews(film_url, n=30):
     """Scrapes reviews from a Letterboxd movie page."""
-    if not validate_letterboxd_url(film_url):
+    if not validate_letterboxd_film_url(film_url):
         raise ValueError(f"Invalid URL: {film_url}")
 
     movie_name = film_url.split("/")[-2]
@@ -62,7 +62,7 @@ def scrape_reviews(film_url, n=30):
 
 def movie_details_scraper(url):
     """Scrapes movie details and backdrop image from Letterboxd."""
-    if not validate_letterboxd_url(url):
+    if not validate_letterboxd_film_url(url):
         raise ValueError(f"Invalid URL: {url}")
 
     movie_name = url.split("/")[-2]
