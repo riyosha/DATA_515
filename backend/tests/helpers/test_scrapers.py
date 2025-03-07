@@ -5,8 +5,8 @@ import csv
 import os
 from unittest.mock import patch
 
-from backend.src.helpers.scrapers import validate_letterboxd_film_url, fetch_reviews, ScraperError
-from backend.src.helpers.scrapers import scrape_reviews, movie_details_scraper
+from src.helpers.scrapers import validate_letterboxd_film_url, fetch_reviews, ScraperError
+from src.helpers.scrapers import scrape_reviews, movie_details_scraper
 
 # Test suite for testing the Letterboxd scraper functionality
 class TestLetterboxdScraper(unittest.TestCase):
