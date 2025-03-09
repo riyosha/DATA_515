@@ -1,12 +1,19 @@
 """Test suite for the Letterboxd scrapers.py helping functions"""
 
 import unittest
-import csv
-import os
+from unittest import mock
 from unittest.mock import patch
 
-from backend.src.helpers.scrapers import validate_letterboxd_film_url, fetch_reviews, ScraperError
+import csv
+import os
+
+from backend.src.helpers.scrapers import (
+    validate_letterboxd_film_url,
+    fetch_reviews,
+    ScraperError,
+)
 from backend.src.helpers.scrapers import scrape_reviews, movie_details_scraper
+
 
 # Test suite for testing the Letterboxd scraper functionality
 class TestLetterboxdScraper(unittest.TestCase):
@@ -15,7 +22,8 @@ class TestLetterboxdScraper(unittest.TestCase):
     def test_valid_url(self):
         """Test valid URL."""
         self.assertEqual(
-            validate_letterboxd_film_url("https://letterboxd.com/film/the-brutalist/"), True
+            validate_letterboxd_film_url("https://letterboxd.com/film/the-brutalist/"),
+            True,
         )
 
     def test_invalid_url(self):
@@ -69,6 +77,27 @@ class TestLetterboxdScraper(unittest.TestCase):
         with self.assertRaises(ScraperError) as context:
             fetch_reviews(valid_url, headers)
         self.assertIn("Failed to get reviews", str(context.exception))
+
+    @mock.patch("requests.get")
+    def test_fetch_reviews_success(self, mock_get):
+        """Test fetch_reviews for a successful HTTP request."""
+
+        # Mock the response object returned by requests.get
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_response.text = "<html><body><h1>Review Page</h1></body></html>"
+        mock_get.return_value = mock_response
+
+        url = "https://letterboxd.com/film/sample_movie/reviews/"
+        headers = {"User-Agent": "Mozilla/5.0"}
+
+        result = fetch_reviews(url, headers)
+
+        # Assert that the mock GET request was made
+        mock_get.assert_called_once_with(url, headers=headers, timeout=10)
+
+        # Assert the response text is as expected
+        self.assertEqual(result, "<html><body><h1>Review Page</h1></body></html>")
 
 
 # Running the tests
