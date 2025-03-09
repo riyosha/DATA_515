@@ -65,7 +65,7 @@ class TestLetterboxdScraper(unittest.TestCase):
         # Assert the response text is as expected
         self.assertEqual(result, "<html><body><h1>Review Page</h1></body></html>")
 
-    @patch("backend.src.helpers.scrapers.fetch_html_content")
+    @patch("src.helpers.scrapers.fetch_html_content")
     def test_scrape_reviews(self, mock_fetch_reviews):
         """Test scraping reviews from a Letterboxd page with n=2."""
         # Mocking the HTML response of the reviews pages
@@ -122,7 +122,7 @@ class TestLetterboxdScraper(unittest.TestCase):
         self.assertEqual(reviews[3]["review_text"], "Could have been more exciting.")
         self.assertEqual(reviews[3]["rating"], "2/5")
 
-    @patch("backend.src.helpers.scrapers.fetch_html_content")
+    @patch("src.helpers.scrapers.fetch_html_content")
     def test_scrape_reviews_no_reviews(self, mock_fetch_reviews):
         """Test if no reviews are found."""
         mock_fetch_reviews.return_value = """
@@ -142,7 +142,7 @@ class TestLetterboxdScraper(unittest.TestCase):
         with self.assertRaises(ValueError):
             scrape_reviews("https://letterboxd.com/INVALID", n=1)
 
-    @patch("backend.src.helpers.scrapers.fetch_html_content")
+    @patch("src.helpers.scrapers.fetch_html_content")
     def test_scrape_reviews_fetch_failure(self, mock_fetch_reviews):
         """Test handling of fetch_reviews failure in scrape_reviews."""
         mock_fetch_reviews.side_effect = ScraperError("Failed to get reviews")
