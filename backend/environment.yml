@@ -2,6 +2,7 @@ name: letterboxd
 channels:
   - defaults
 dependencies:
+  - black
   - bs4
   - ca-certificates=2024.12.31
   - libcxx=14.0.6
