@@ -5,7 +5,7 @@ from unittest import mock
 from unittest.mock import patch, MagicMock
 
 
-from backend.src.helpers.scrapers import (
+from ...backend.src.helpers.scrapers import (
     validate_letterboxd_film_url,
     fetch_html_content,
     scrape_reviews,
