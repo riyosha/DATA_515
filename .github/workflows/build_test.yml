@@ -44,13 +44,13 @@ jobs:
       # Run pylint on backend code
       - name: Run pylint on backend
         run: |
-          docker run --rm backend-app conda run -n letterboxd pylint src/ tests/
+          docker run --rm -w /app backend-app conda run -n letterboxd pylint src/ tests/
         continue-on-error: true  # Optional: To prevent build failures initially
 
       # Run unit tests inside the Docker container
       - name: Run backend tests in Docker
         run: |
-          docker run --name backend-container backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
+          docker run --name backend-container -w /app backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
           docker cp backend-container:/app/.coverage backend/.coverage
           docker rm backend-container
 
