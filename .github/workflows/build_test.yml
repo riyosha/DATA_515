@@ -50,7 +50,7 @@ jobs:
       # Run unit tests inside the Docker container
       - name: Run backend tests in Docker
         run: |
-          docker run --name backend-container -w /app -e PYTHONPATH="/app/backend" backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
+          docker run --name backend-container -w /app -e PYTHONPATH="/app" backend-app conda run -n letterboxd coverage run --source=src -m unittest discover -s tests
           docker cp backend-container:/app/.coverage backend/.coverage
           docker rm backend-container
 
