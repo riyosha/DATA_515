@@ -17,7 +17,7 @@ def validate_letterboxd_film_url(film_url):
     return bool(re.match(pattern, film_url))
 
 
-def fetch_reviews(url, headers):
+def fetch_html_content(url, headers):
     """Fetches HTML content from a given URL."""
     response = requests.get(url, headers=headers, timeout=10)
     if response.status_code == 200:
@@ -37,17 +37,24 @@ def scrape_reviews(film_url, n=30):
     reviews_data = []
 
     for page in range(1, n + 1):
-        html_content = fetch_reviews(
-            f"{film_url}reviews/by/activity/page/{page}/", headers
-        )
+        try:
+            html_content = fetch_html_content(
+                f"{film_url}reviews/by/activity/page/{page}/", headers
+            )
+        except ScraperError:
+            continue
+
         soup = BeautifulSoup(html_content, "html.parser")
         reviews = soup.select("li.film-detail")
+
+        if not reviews:
+            pass
 
         for review in reviews:
             review_text = review.select_one(".js-review-body p")
             rating = review.select_one(".rating")
             reviews_data.append({
-                "rating": rating.get_text(strip=True) if rating else "No Rating",
+                "rating": rating.get_text(strip=True) if rating else None,
                 "review_text": review_text.get_text(strip=True) if review_text else "",
             })
 
@@ -61,13 +68,9 @@ def movie_details_scraper(url):
 
     movie_name = url.split("/")[-2]
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers, timeout=10)
-    if response.status_code != 200:
-        raise ScraperError(
-            f"Failed to retrieve details from {url}. Status code: {response.status_code}"
-        )
+    html_content = fetch_html_content(url, headers=headers)
 
-    soup = BeautifulSoup(response.text, "html.parser")
+    soup = BeautifulSoup(html_content, "html.parser")
 
     def extract_text(selector):
         element = soup.select_one(selector)
@@ -82,11 +85,11 @@ def movie_details_scraper(url):
     synopsis = extract_text(".truncate p")
 
     movie_details = {
-        "movie_name": movie_name,
-        "year": year,
-        "director": director,
-        "genres": genres,
-        "synopsis": synopsis
+        "movie_name": movie_name if movie_name else None,
+        "year": year if year else None,
+        "director": director if year else None,
+        "genres": genres if genres else None,
+        "synopsis": synopsis if synopsis else None
     }
 
     # Extract backdrop image URL (if any)

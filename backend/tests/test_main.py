@@ -1,5 +1,5 @@
 import unittest
-from src.main import app
+from backend.src.main import app
 
 class TestMain(unittest.TestCase):
     def setUp(self):
