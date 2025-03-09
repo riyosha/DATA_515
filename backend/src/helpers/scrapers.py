@@ -2,7 +2,6 @@
 Scraper functions for extracting movie details and reviews from Letterboxd.
 """
 
-import csv
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -33,32 +32,25 @@ def scrape_reviews(film_url, n=30):
     if not validate_letterboxd_film_url(film_url):
         raise ValueError(f"Invalid URL: {film_url}")
 
-    movie_name = film_url.split("/")[-2]
     headers = {"User-Agent": "Mozilla/5.0"}
 
-    with open(
-        f"{movie_name}_reviews.csv", "w", newline="", encoding="utf-8"
-    ) as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(["Rating", "Review Text"])
+    reviews_data = []
 
-        reviews_data = []
+    for page in range(1, n + 1):
+        html_content = fetch_reviews(
+            f"{film_url}reviews/by/activity/page/{page}/", headers
+        )
+        soup = BeautifulSoup(html_content, "html.parser")
+        reviews = soup.select("li.film-detail")
 
-        for page in range(1, n + 1):
-            html_content = fetch_reviews(
-                f"{film_url}reviews/by/activity/page/{page}/", headers
-            )
-            soup = BeautifulSoup(html_content, "html.parser")
-            reviews = soup.select("li.film-detail")
+        for review in reviews:
+            review_text = review.select_one(".js-review-body p")
+            rating = review.select_one(".rating")
+            reviews_data.append({
+                "rating": rating.get_text(strip=True) if rating else "No Rating",
+                "review_text": review_text.get_text(strip=True) if review_text else "",
+            })
 
-            for review in reviews:
-                review_text = review.select_one(".js-review-body p")
-                rating = review.select_one(".rating")
-                reviews_data.append({
-                    "rating": rating.get_text(strip=True) if rating else "No Rating",
-                    "review_text": review_text.get_text(strip=True) if review_text else "",
-                })
-    
     return reviews_data
 
 
@@ -86,7 +78,7 @@ def movie_details_scraper(url):
     genres = ", ".join(
         [g.get_text(strip=True) for g in soup.select("#tab-genres .text-slug")]
     )
-    genres = genres.rstrip(", Show All…")
+    genres = genres.replace(" Show All…", "")
     synopsis = extract_text(".truncate p")
 
     movie_details = {
