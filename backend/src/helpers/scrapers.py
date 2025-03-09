@@ -66,7 +66,6 @@ def movie_details_scraper(url):
     if not validate_letterboxd_film_url(url):
         raise ValueError(f"Invalid URL: {url}")
 
-    movie_name = url.split("/")[-2]
     headers = {"User-Agent": "Mozilla/5.0"}
     html_content = fetch_html_content(url, headers=headers)
 
@@ -77,6 +76,7 @@ def movie_details_scraper(url):
         return element.get_text(strip=True) if element else None
 
     year = extract_text("div.releaseyear a")
+    movie_name = extract_text("h1.filmtitle span.name.js-widont.prettify")
     director = extract_text("span.directorlist")
     genres = ", ".join(
         [g.get_text(strip=True) for g in soup.select("#tab-genres .text-slug")]
