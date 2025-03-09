@@ -42,6 +42,8 @@ def scrape_reviews(film_url, n=30):
         csv_writer = csv.writer(csv_file)
         csv_writer.writerow(["Rating", "Review Text"])
 
+        reviews_data = []
+
         for page in range(1, n + 1):
             html_content = fetch_reviews(
                 f"{film_url}reviews/by/activity/page/{page}/", headers
@@ -52,12 +54,12 @@ def scrape_reviews(film_url, n=30):
             for review in reviews:
                 review_text = review.select_one(".js-review-body p")
                 rating = review.select_one(".rating")
-                csv_writer.writerow(
-                    [
-                        rating.get_text(strip=True) if rating else "No Rating",
-                        review_text.get_text(strip=True) if review_text else "",
-                    ]
-                )
+                reviews_data.append({
+                    "rating": rating.get_text(strip=True) if rating else "No Rating",
+                    "review_text": review_text.get_text(strip=True) if review_text else "",
+                })
+    
+    return reviews_data
 
 
 def movie_details_scraper(url):
@@ -84,23 +86,24 @@ def movie_details_scraper(url):
     genres = ", ".join(
         [g.get_text(strip=True) for g in soup.select("#tab-genres .text-slug")]
     )
+    genres = genres.rstrip(", Show All…")
     synopsis = extract_text(".truncate p")
 
-    with open(f"{movie_name}_details.csv", "w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Year", "Director", "Genres", "Synopsis"])
-        writer.writerow([year, director, genres, synopsis])
+    movie_details = {
+        "movie_name": movie_name,
+        "year": year,
+        "director": director,
+        "genres": genres,
+        "synopsis": synopsis
+    }
 
+    # Extract backdrop image URL (if any)
     backdrop_url = soup.select_one("#backdrop[data-backdrop]")
     if backdrop_url:
-        img_response = requests.get(
-            backdrop_url["data-backdrop"], stream=True, timeout=10
-        )
-        if img_response.status_code == 200:
-            with open(f"{movie_name}_image.jpg", "wb") as file:
-                for chunk in img_response.iter_content(1024):
-                    file.write(chunk)
-        else:
-            raise ScraperError(
-                f"Failed to download image. Status code: {img_response.status_code}"
-            )
+        backdrop_image_url = backdrop_url["data-backdrop"]
+    else:
+        backdrop_image_url = None
+
+    movie_details["backdrop_image_url"] = backdrop_image_url
+
+    return movie_details
