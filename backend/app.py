@@ -3,7 +3,7 @@ API for scraping movie details and reviews from Letterboxd
 """
 
 from flask import Flask, request, jsonify
-from helpers.scrapers import movie_details_scraper,scrape_reviews
+from src.helpers.scrapers import movie_details_scraper,scrape_reviews
 
 app = Flask(__name__)
 
