@@ -251,7 +251,7 @@ class LetterboxdReviewAnalyzer:
                 if len(summary.split()) > 210:
                     raise SummaryError("Summary too long")
                 break
-            except (ValueError, TypeError, KeyError) as error:
+            except (SummaryError, ValueError, TypeError, KeyError) as error:
                 print(f"Error generating summary: {error}")
                 continue
         else:
@@ -262,7 +262,7 @@ class LetterboxdReviewAnalyzer:
                 aspects = self.generate_aspects(reviews, api_key2[i], safety=safety)
                 aspect_list = self.aspect_processor(aspects)
                 break
-            except (ValueError, TypeError, KeyError) as e:
+            except (AspectFormatError, ValueError, TypeError, KeyError) as e:
                 print(f"Error generating summary: {e}")
                 continue
         else:
