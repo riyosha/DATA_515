@@ -9,7 +9,7 @@ COPY environment.yml .
 RUN conda env create -f environment.yml
 
 # Activate the environment
-SHELL ["conda", "run", "-n", "letterboxd", "/bin/bash", "-c"]
+RUN echo "conda activate letterboxd" >> ~/.bashrc
 
 # Copy the source code
 COPY . .
@@ -17,5 +17,8 @@ COPY . .
 # Expose the backend port
 EXPOSE 5515
 
+# Set entrypoint to ensure Conda environment is always activated
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "letterboxd"]
+
 # Command to run the application
-CMD ["conda", "run", "--no-capture-output", "-n", "letterboxd", "python", "src/main.py"]
+CMD ["python", "src/main.py"]

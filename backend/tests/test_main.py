@@ -1,11 +1,17 @@
 import unittest
-from src.main import add_numbers
+from src.main import app
 
 class TestMain(unittest.TestCase):
-    def test_add_numbers(self):
+    def setUp(self):
+        """Set up a test client before each test."""
+        self.app = app.test_client()
+        self.app.testing = True
 
-        self.assertEqual(add_numbers(2, 3), 5)
-        self.assertEqual(add_numbers(-1, 1), 0)
+    def test_home_route(self):
+        """Test if the home route returns the expected response."""
+        response = self.app.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {"message": "Hello from the backend!"})
 
 if __name__ == "__main__":
     unittest.main()
