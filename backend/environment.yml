@@ -5,6 +5,7 @@ dependencies:
   - black
   - bs4
   - ca-certificates=2024.12.31
+  - google-generativeai
   - libcxx=14.0.6
   - libffi=3.4.4
   - ncurses=6.4
