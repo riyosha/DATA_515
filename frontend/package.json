@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^5.2.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
