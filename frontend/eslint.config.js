@@ -12,7 +12,8 @@ export default [
       ecmaVersion: 2020,
       globals: {
         ...globals.browser,
-        ...globals.jest
+        ...globals.jest,
+        global: 'readonly',
       },
       parserOptions: {
         ecmaVersion: 'latest',
@@ -38,4 +39,4 @@ export default [
       ],
     },
   },
-]
+];

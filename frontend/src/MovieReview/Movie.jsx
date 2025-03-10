@@ -14,6 +14,7 @@ const Movie = () => {
       try {
         let processedData;
 
+        /*
         // MOCK DATA FOR LOCAL TESTING - Uncomment this block and comment the API code below to test locally and vice versa
         const startTime = Date.now();
         const minimumLoadingTime = 1000;
@@ -38,7 +39,7 @@ const Movie = () => {
           await new Promise(resolve => setTimeout(resolve, remainingTime));
         }
 
-        /*
+        */
 
         const response = await fetch('https://your-api-endpoint.com/movie/123');
         if (!response.ok) {
@@ -56,7 +57,6 @@ const Movie = () => {
           synopsis: data.overview,
           review: data.critic_review || "No review available"
         };
-        */
         
         // Update state with fetched data
         setMovieData(processedData);
