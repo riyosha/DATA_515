@@ -9,7 +9,7 @@ const Video = ({ videoPath }) => {
 };
 
 Video.propTypes = {
-  videoPath: PropTypes.string.isRequired
+  videoPath: PropTypes.string.isRequired,
 };
 
 export default Video;

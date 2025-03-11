@@ -10,7 +10,7 @@ const Movie = () => {
 
   useEffect(() => {
     // Function to fetch data
-    const fetchMovieData = async () => {      
+    const fetchMovieData = async () => {
       try {
         let processedData;
 
@@ -55,15 +55,14 @@ const Movie = () => {
           genres: data.genres || [],
           backgroundImage: data.poster_url,
           synopsis: data.overview,
-          review: data.critic_review || "No review available"
+          review: data.critic_review || 'No review available',
         };
-        
+
         // Update state with fetched data
         setMovieData(processedData);
         setLoading(false);
-
       } catch (err) {
-        console.error('Error fetching movie data:', err);        
+        console.error('Error fetching movie data:', err);
         setError('Failed to fetch movie data');
         setLoading(false);
       }
@@ -81,42 +80,52 @@ const Movie = () => {
   }
 
   return (
-    <div style={{
-      position: 'relative',
-      minHeight: '100vh',
-      backgroundColor: '#000',
-      color: '#fff',
-    }}>
-      {/* Background Image with dark overlay */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundImage: `url(${movieData.backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        zIndex: 1
-      }}>
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        }}></div>
-      </div>
-      
-      {/* Content container */}
-      <div style={{
+    <div
+      style={{
         position: 'relative',
-        zIndex: 2,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
         minHeight: '100vh',
-        padding: '0 2rem'
-      }}>
-        <div style={{
-          maxWidth: '72rem',
-          width: '100%',  
-        }}>
+        backgroundColor: '#000',
+        color: '#fff',
+      }}
+    >
+      {/* Background Image with dark overlay */}
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundImage: `url(${movieData.backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: 1,
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          }}
+        ></div>
+      </div>
+
+      {/* Content container */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          padding: '0 2rem',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '72rem',
+            width: '100%',
+          }}
+        >
           <MovieInfo {...movieData} />
         </div>
       </div>

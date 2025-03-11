@@ -1,58 +1,58 @@
 .movie-info-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  .movie-header {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-  
-  .movie-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-  
-  .movie-year {
-    font-weight: 400;
-    font-size: 1.5rem;
-  }
-  
-  .movie-director {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .movie-genres {
-    font-size: 1.2rem;
-  }
-  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.movie-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.movie-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.movie-year {
+  font-weight: 400;
+  font-size: 1.5rem;
+}
+
+.movie-director {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.movie-genres {
+  font-size: 1.2rem;
+}
+
+.movie-content {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
   .movie-content {
-    display: flex;
-    gap: 2rem;
+    flex-direction: column;
   }
-  
-  @media (max-width: 768px) {
-    .movie-content {
-      flex-direction: column;
-    }
-  }
-  
-  .movie-synopsis-container,
-  .movie-review-container {
-    flex: 1;
-  }
-  
-  .content-heading {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-  
-  .movie-synopsis,
-  .movie-review {
-    line-height: 1.6;
-    font-size: 1.2rem;
-  }
+}
+
+.movie-synopsis-container,
+.movie-review-container {
+  flex: 1;
+}
+
+.content-heading {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.movie-synopsis,
+.movie-review {
+  line-height: 1.6;
+  font-size: 1.2rem;
+}
