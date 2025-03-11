@@ -51,9 +51,11 @@ test-frontend:
 
 lint-frontend:
 	docker-compose exec frontend npm run lint
+	docker-compose exec frontend npm run prettier:check
 
 lint-fix-frontend:
 	docker-compose exec frontend npm run lint:fix
+	docker-compose exec frontend npm run prettier:write
 
 coverage-frontend:
 	docker-compose exec frontend npm test -- --coverage

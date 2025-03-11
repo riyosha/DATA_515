@@ -9,19 +9,23 @@ import Error from '../Error';
 // Mock the component dependencies
 vi.mock('../MovieInfo', () => {
   return {
-    default: vi.fn(() => <div data-testid="movie-info">MovieInfo Component</div>)
+    default: vi.fn(() => (
+      <div data-testid="movie-info">MovieInfo Component</div>
+    )),
   };
 });
 
 vi.mock('../Video', () => {
   return {
-    default: vi.fn(({ videoPath }) => <div data-testid="video">{videoPath}</div>)
+    default: vi.fn(({ videoPath }) => (
+      <div data-testid="video">{videoPath}</div>
+    )),
   };
 });
 
 vi.mock('../Error', () => {
   return {
-    default: vi.fn(() => <div data-testid="error">Error Component</div>)
+    default: vi.fn(() => <div data-testid="error">Error Component</div>),
   };
 });
 
@@ -39,31 +43,42 @@ describe('Movie Component', () => {
 
   it('displays loading video while fetching data', async () => {
     // Mock a slow response
-    global.fetch.mockImplementationOnce(() => 
-      new Promise(resolve => setTimeout(() => resolve({
-        ok: true,
-        json: () => Promise.resolve({
-          title: 'Test Movie',
-          director: 'Test Director',
-          release_year: '2023',
-          genres: ['Action', 'Drama'],
-          poster_url: 'test-image.jpg',
-          overview: 'Test synopsis',
-          critic_review: 'Test review'
-        })
-      }), 100))
+    global.fetch.mockImplementationOnce(
+      () =>
+        new Promise((resolve) =>
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                json: () =>
+                  Promise.resolve({
+                    title: 'Test Movie',
+                    director: 'Test Director',
+                    release_year: '2023',
+                    genres: ['Action', 'Drama'],
+                    poster_url: 'test-image.jpg',
+                    overview: 'Test synopsis',
+                    critic_review: 'Test review',
+                  }),
+              }),
+            100
+          )
+        )
     );
 
     render(<Movie />);
-    
+
     // Should show the loading video initially
     expect(screen.getByTestId('video')).toBeInTheDocument();
     expect(screen.getByText('/videos/go-to-the-lobby.mp4')).toBeInTheDocument();
-    
+
     // Wait for loading to complete and verify it's gone
-    await waitFor(() => {
-      expect(screen.queryByTestId('video')).not.toBeInTheDocument();
-    }, { timeout: 2000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByTestId('video')).not.toBeInTheDocument();
+      },
+      { timeout: 2000 }
+    );
   });
 
   it('renders MovieInfo with correct data after successful fetch', async () => {
@@ -75,12 +90,12 @@ describe('Movie Component', () => {
       genres: ['Action', 'Drama'],
       poster_url: 'test-image.jpg',
       overview: 'Test synopsis',
-      critic_review: 'Test review'
+      critic_review: 'Test review',
     };
-    
+
     global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(mockMovieData)
+      json: () => Promise.resolve(mockMovieData),
     });
 
     render(<Movie />);
@@ -91,15 +106,18 @@ describe('Movie Component', () => {
     });
 
     // Check that MovieInfo was called with the correctly processed data
-    expect(MovieInfo).toHaveBeenCalledWith({
-      name: 'Test Movie',
-      director: 'Test Director',
-      year: '2023',
-      genres: ['Action', 'Drama'],
-      backgroundImage: 'test-image.jpg',
-      synopsis: 'Test synopsis',
-      review: 'Test review'
-    }, undefined);
+    expect(MovieInfo).toHaveBeenCalledWith(
+      {
+        name: 'Test Movie',
+        director: 'Test Director',
+        year: '2023',
+        genres: ['Action', 'Drama'],
+        backgroundImage: 'test-image.jpg',
+        synopsis: 'Test synopsis',
+        review: 'Test review',
+      },
+      undefined
+    );
   });
 
   it('shows error component when fetch fails', async () => {
@@ -121,7 +139,7 @@ describe('Movie Component', () => {
     // Mock API error response
     global.fetch.mockResolvedValueOnce({
       ok: false,
-      status: 404
+      status: 404,
     });
 
     render(<Movie />);
@@ -136,12 +154,13 @@ describe('Movie Component', () => {
     // Mock API response with minimal data
     global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({
-        title: 'Minimal Movie',
-        director: 'Some Director',
-        release_year: '2022',
-        // Missing genres, poster_url, etc.
-      })
+      json: () =>
+        Promise.resolve({
+          title: 'Minimal Movie',
+          director: 'Some Director',
+          release_year: '2022',
+          // Missing genres, poster_url, etc.
+        }),
     });
 
     render(<Movie />);
@@ -160,8 +179,9 @@ describe('Movie Component', () => {
         genres: [], // Should default to empty array
         review: 'No review available', // Should use default message
         backgroundImage: undefined, // Should default to undefined
-        synopsis: undefined // Should default to undefined
-      }), undefined
+        synopsis: undefined, // Should default to undefined
+      }),
+      undefined
     );
   });
 });

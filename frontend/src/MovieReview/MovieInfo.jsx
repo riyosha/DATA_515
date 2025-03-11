@@ -5,9 +5,13 @@ const MovieInfo = ({ name, director, year, genres, review, synopsis }) => {
   return (
     <div className="movie-info-container">
       <header className="movie-header">
-        <h1 className="movie-title">{name} <span className="movie-year">({year})</span></h1>
+        <h1 className="movie-title">
+          {name} <span className="movie-year">({year})</span>
+        </h1>
         <p className="movie-director">Directed by {director}</p>
-        <p className="movie-genres">{Array.isArray(genres) ? genres.join(', ') : genres}</p>
+        <p className="movie-genres">
+          {Array.isArray(genres) ? genres.join(', ') : genres}
+        </p>
       </header>
 
       <div className="movie-content">

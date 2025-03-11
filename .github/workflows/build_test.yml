@@ -94,7 +94,8 @@ jobs:
         run: |
           cd frontend
           npm run lint
-        continue-on-error: true  # Optional: To prevent build failures initially
+          npm run prettier:check
+        continue-on-error: false
 
       # Run frontend unit tests
       - name: Run frontend tests
