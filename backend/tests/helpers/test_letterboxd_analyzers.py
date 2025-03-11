@@ -6,7 +6,7 @@ from src.helpers.letterboxd_analyzers import (
     LetterboxdReviewAnalyzer,
     AspectFormatError,
     SummaryError,
-)  # Replace with actual module name
+)
 
 
 class TestLetterboxdReviewAnalyzer(unittest.TestCase):
