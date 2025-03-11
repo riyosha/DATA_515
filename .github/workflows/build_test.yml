@@ -45,7 +45,7 @@ jobs:
       - name: Run pylint on backend
         run: |
           docker run --rm -w /app backend-app conda run -n letterboxd pylint src/ tests/
-        continue-on-error: true  # Optional: To prevent build failures initially
+        continue-on-error: false
 
       # Run unit tests inside the Docker container
       - name: Run backend tests in Docker
@@ -67,16 +67,6 @@ jobs:
           path-to-lcov: backend/coverage.lcov
           flag-name: backend
           parallel: true
-
-      # If there are any other steps in order for your tests to
-      # run successfully, you can add those steps here!
-
-      # Next step: run pylint. Anything less than 10/10 will fail.
-      #            Once we've covered pylint in lecture, uncomment
-      #            the following lines.
-      # - name: Lint with pylint
-      #   run: |
-      #     pylint entropy/**/*.py
 
   # Frontend Test Job
   build_test_frontend:

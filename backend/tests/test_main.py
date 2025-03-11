@@ -1,7 +1,9 @@
+""" Test the main route of the backend. """
 import unittest
 from src.main import app
 
 class TestMain(unittest.TestCase):
+    """Test the main route of the backend."""
     def setUp(self):
         """Set up a test client before each test."""
         self.app = app.test_client()

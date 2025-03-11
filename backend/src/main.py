@@ -8,6 +8,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
+    """
+    Return a welcome message for the API homepage.
+    """
     return {"message": "Hello from the backend!"}
 
 if __name__ == "__main__":
