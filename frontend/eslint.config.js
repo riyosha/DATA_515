@@ -44,4 +44,4 @@ export default [
     },
   },
   prettier, // This must be the last configuration in the array to properly override other rules
-]
+];
