@@ -2,10 +2,7 @@
 Test suite for the scrapers_roast.py helper functions.
 """
 
-import csv
 import unittest
-from io import StringIO
-from unittest import mock
 from unittest.mock import MagicMock, mock_open, patch
 
 from src.helpers.scrapers_roast import (
@@ -51,7 +48,7 @@ class TestLetterboxdScrapersRoast(unittest.TestCase):
         <html>
             <body class="error message-dark">
                 <h1>Letterboxd Error</h1>
-                <strong>Sorry, we can’t find the page you’ve requested.</strong>
+                <strong>Sorry, we can't find the page you've requested.</strong>
             </body>
         </html>
         """
@@ -120,14 +117,25 @@ class TestLetterboxdScrapersRoast(unittest.TestCase):
         letterboxd_user_reviews_scraper("testuser")
 
         # Verify that the CSV file was opened for writing
-        mock_file.assert_called_with("testuser_reviews.csv", mode="w", newline="", encoding="utf-8")
+        mock_file.assert_called_with(
+            "testuser_reviews.csv",
+            mode="w",
+            newline="",
+            encoding="utf-8"
+        )
         handle = mock_file()
         written_content = "".join(call.args[0] for call in handle.write.call_args_list)
 
         # Check for CSV header and expected data rows.
         self.assertIn("Movie Name,Movie URL,Year,Rating,Watched Date,Review", written_content)
-        self.assertIn("Movie One,https://letterboxd.com/film/movie1/,2020,4/5,2021-01-01,Great movie!", written_content)
-        self.assertIn("Movie Two,https://letterboxd.com/film/movie2/,2019,3/5,2021-02-01,Not bad.", written_content)
+        self.assertIn(
+            "Movie One,https://letterboxd.com/film/movie1/,2020,4/5,2021-01-01,Great movie!",
+            written_content
+        )
+        self.assertIn(
+            "Movie Two,https://letterboxd.com/film/movie2/,2019,3/5,2021-02-01,Not bad.",
+            written_content
+        )
 
     @patch("src.helpers.scrapers_roast.requests.get")
     def test_letterboxd_user_reviews_scraper_http_failure(self, mock_get):
@@ -158,13 +166,19 @@ class TestLetterboxdScrapersRoast(unittest.TestCase):
         letterboxd_user_stats_scraper("testuser")
 
         # Verify that the CSV file was opened for writing.
-        mock_file.assert_called_with("testuser_stats.csv", mode="w", newline="", encoding="utf-8")
+        mock_file.assert_called_with(
+            "testuser_stats.csv",
+            mode="w",
+            newline="",
+            encoding="utf-8"
+        )
         handle = mock_file()
         written_content = "".join(call.args[0] for call in handle.write.call_args_list)
 
         # Check for CSV header and expected stats row.
         self.assertIn(
-            "Number of Years,Total Hours Watched,Number of Directors,Number of Countries,Longest Streak (days),Days with 2+ Films",
+            "Number of Years,Total Hours Watched,Number of Directors,"
+            "Number of Countries,Longest Streak (days),Days with 2+ Films",
             written_content,
         )
         self.assertIn("5,100,50,20,30,10", written_content)
@@ -183,7 +197,7 @@ class TestLetterboxdScrapersRoast(unittest.TestCase):
         <html>
             <body class="error message-dark">
                 <h1>Letterboxd Error</h1>
-                <strong>Sorry, we can’t find the page you’ve requested.</strong>
+                <strong>Sorry, we can't find the page you've requested.</strong>
             </body>
         </html>
         """
@@ -194,4 +208,3 @@ class TestLetterboxdScrapersRoast(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
