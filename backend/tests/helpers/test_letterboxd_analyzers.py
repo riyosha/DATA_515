@@ -2,7 +2,7 @@
 
 import unittest
 from unittest.mock import patch, MagicMock
-from backend.src.helpers.letterboxd_analyzers import (
+from src.helpers.letterboxd_analyzers import (
     LetterboxdReviewAnalyzer,
     AspectFormatError,
     SummaryError,
@@ -118,10 +118,10 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
             )
 
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
+        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
     )
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
+        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
     )
     def test_get_results_success(self, mock_generate_summary, mock_generate_aspects):
         """Test get_results with enough reviews"""
@@ -173,10 +173,10 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
+        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
     )
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
+        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
     )
     def test_get_results_all_attempts_fail(
         self, mock_generate_summary, mock_generate_aspects
@@ -208,7 +208,7 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         self.assertEqual(mock_generate_aspects.call_count, 3)
 
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel.generate_content"
+        "src.helpers.letterboxd_analyzers.genai.GenerativeModel.generate_content"
     )
     def test_generate_summary_success(self, mock_generate_content):
         """Test successful summary generation"""
@@ -227,7 +227,7 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
 
 
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel"
+        "src.helpers.letterboxd_analyzers.genai.GenerativeModel"
     )
     def test_generate_summary_too_long(self, mock_model):
         """Test generate_summary when the generated summary exceeds the word limit."""
@@ -250,7 +250,7 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         # Ensure the method was actually called
         mock_model_instance.generate_content.assert_called_once()
 
-    @patch("backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel")
+    @patch("src.helpers.letterboxd_analyzers.genai.GenerativeModel")
     def test_generate_summary_exception(self, mock_model):
         """Test generate_summary when an exception occurs during API call."""
 
@@ -269,7 +269,7 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         mock_model_instance.generate_content.assert_called_once()
 
     @patch(
-        "backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel"
+        "src.helpers.letterboxd_analyzers.genai.GenerativeModel"
     )
     def test_generate_aspects_exception(self, mock_model):
         """Test generate_aspects when exception is raised"""
