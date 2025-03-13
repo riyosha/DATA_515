@@ -22,6 +22,7 @@ dependencies:
   - zlib=1.2.13
   - pip
   - pip:
-      - flask 
       - coverage
+      - flask 
+      - google-generativeai
       - unittest2
