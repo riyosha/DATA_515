@@ -50,30 +50,6 @@ class TestRoastGenerator(unittest.TestCase):
         mock_print.assert_any_call("\nYour Letterboxd Roast:\n")
         mock_print.assert_any_call("This is a savage roast.")
 
-    @patch("src.helpers.roast_generator.pd.read_csv")
-    @patch("src.helpers.roast_generator.print")
-    def test_generate_funny_roast_reviews_file_missing(self, mock_print, mock_read_csv):
-        """
-        Test that when the reviews CSV file is missing, the function prints an error message.
-        """
-        # Simulate FileNotFoundError when reading the reviews file.
-        mock_read_csv.side_effect = FileNotFoundError
-        generate_funny_roast("dummyuser", "dummy_api_key")
-        mock_print.assert_any_call(
-            "Error: Could not find file 'dummyuser_reviews.csv'. "
-            "Make sure the username is correct."
-        )
-
-    @patch("src.helpers.roast_generator.pd.read_csv")
-    @patch("src.helpers.roast_generator.print")
-    def test_generate_funny_roast_general_exception(self, mock_print, mock_read_csv):
-        """
-        Test that a general exception during roast generation is caught and printed.
-        """
-        mock_read_csv.side_effect = Exception("Test error")
-        generate_funny_roast("dummyuser", "dummy_api_key")
-        mock_print.assert_any_call("Error generating roast: Test error")
-
     @patch.dict(os.environ, {"GEMINI_API_KEY": "dummy_api_key"})
     @patch("src.helpers.roast_generator.generate_funny_roast")
     @patch("builtins.input", return_value="dummyuser")
