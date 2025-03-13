@@ -143,9 +143,9 @@ class TestLetterboxdScraper(unittest.TestCase):
             scrape_reviews("https://letterboxd.com/INVALID", n=1)
 
     @patch("src.helpers.scrapers.fetch_html_content")
-    def test_scrape_reviews_fetch_failure(self, mock_fetch_reviews):
+    def test_scrape_reviews_fetch_failure(self, mock_fetch_html_content):
         """Test handling of fetch_reviews failure in scrape_reviews."""
-        mock_fetch_reviews.side_effect = ScraperError("Failed to get reviews")
+        mock_fetch_html_content.side_effect = ScraperError("Failed to get reviews")
 
         reviews = scrape_reviews("https://letterboxd.com/film/some-movie/", n=1)
 
