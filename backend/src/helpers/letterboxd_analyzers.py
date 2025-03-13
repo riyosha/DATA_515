@@ -89,8 +89,8 @@ class LetterboxdReviewAnalyzer:
             response = model1.generate_content(
                 prompt, safety_settings=self.SAFETY_SETTINGS
             )
-            if len(response.text.strip()) > 210:
-                raise SummaryError("Summary over 210 words")
+            if len(response.text.split()) > 210:
+                raise SummaryError("Summary over 200 words")
             return response.text
 
         except Exception as error:
@@ -162,8 +162,7 @@ class LetterboxdReviewAnalyzer:
             return response.text
 
         except Exception as error:
-            print(f"An error occurred: {error}")
-            raise
+            raise ValueError(f'Error generating aspects: {error}') from error
 
     def aspect_processor(self, aspect_string):
         """
@@ -176,13 +175,13 @@ class LetterboxdReviewAnalyzer:
             list: A sorted list of aspects and their percentages.
         """
         try:
+            # re pattern helps us extract content between curly brackets
             match = re.search(r"\{([\s\S]*)\}", aspect_string)
             if match is None:
                 raise AspectFormatError("Invalid aspect format")
 
             cleaned_string = "{" + match.group(1).strip() + "}"
             aspect_dict = ast.literal_eval(cleaned_string)
-            assert isinstance(aspect_dict, dict)
 
             aspects = []
             for aspect, details in aspect_dict.items():
@@ -195,10 +194,8 @@ class LetterboxdReviewAnalyzer:
                         try:
                             positive_percentage = int(details[0])
                             negative_percentage = int(details[1])
-                            total_mentions = positive_percentage + negative_percentage
                             aspects.append(
                                 [
-                                    total_mentions,
                                     aspect.title(),
                                     positive_percentage,
                                     negative_percentage,
@@ -220,10 +217,9 @@ class LetterboxdReviewAnalyzer:
                     print(f"Invalid format for aspect '{aspect}'. Skipping.")
                     continue  # Skip to the next aspect
 
-            aspects.sort(reverse=True, key=lambda x: x[0])
-            sorted_aspects = [aspect[1:] for aspect in aspects]  # Remove total mentions
+            aspects.sort(reverse=True, key=lambda x: x[1]+x[2])
 
-            return sorted_aspects
+            return aspects
 
         except (json.JSONDecodeError, AssertionError, ValueError) as error:
             print(error)

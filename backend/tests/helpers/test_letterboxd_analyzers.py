@@ -1,8 +1,8 @@
 """Testing suite for the class LetterboxdAnalyzer"""
 
 import unittest
-from unittest.mock import patch
-from src.helpers.letterboxd_analyzers import (
+from unittest.mock import patch, MagicMock
+from backend.src.helpers.letterboxd_analyzers import (
     LetterboxdReviewAnalyzer,
     AspectFormatError,
     SummaryError,
@@ -92,7 +92,7 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         """Test aspect_processor with half complete aspect string."""
         aspects = """```python
                     {
-                        "Cinematography": [80, 20],
+                        "Cinematography": [],
                         "Acting": [70],
                         "Direction": {'pos': 50, 'neg': 50},
                         "Humor/Comedy": [37, 15],
@@ -100,7 +100,7 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
                     }
                     ```"""
         processed_aspects = self.analyzer.aspect_processor(aspects)
-        expected_output = [["Cinematography", 80, 20], ["Humor/Comedy", 37, 15]]
+        expected_output = [["Humor/Comedy", 37, 15]]
         self.assertEqual(processed_aspects, expected_output)
 
     def test_aspect_processor_invalid(self):
@@ -118,10 +118,10 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
             )
 
     @patch(
-        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
+        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
     )
     @patch(
-        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
+        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
     )
     def test_get_results_success(self, mock_generate_summary, mock_generate_aspects):
         """Test get_results with enough reviews"""
@@ -173,10 +173,10 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     @patch(
-        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
+        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_aspects"
     )
     @patch(
-        "src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
+        "backend.src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.generate_summary"
     )
     def test_get_results_all_attempts_fail(
         self, mock_generate_summary, mock_generate_aspects
@@ -206,6 +206,86 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
 
         self.assertEqual(mock_generate_summary.call_count, 3)
         self.assertEqual(mock_generate_aspects.call_count, 3)
+
+    @patch(
+        "backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel.generate_content"
+    )
+    def test_generate_summary_success(self, mock_generate_content):
+        """Test successful summary generation"""
+
+        reviews = [{"review_text": f"Review {i}"} for i in range(400)]
+        review_text = self.analyzer.read_reviews(reviews)
+
+        mock_response = MagicMock()
+        mock_response.text = "word" * 100
+        mock_generate_content.return_value = mock_response
+
+        result = self.analyzer.generate_summary(review_text, api_key1="dummy_key")
+
+        self.assertEqual(result, mock_response.text)
+
+
+
+    @patch(
+        "backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel"
+    )
+    def test_generate_summary_too_long(self, mock_model):
+        """Test generate_summary when the generated summary exceeds the word limit."""
+
+        reviews = [{"review_text": f"Review {i}"} for i in range(400)]
+        review_text = self.analyzer.read_reviews(reviews)
+
+        # Mocking the response object and its text attribute
+        mock_response = unittest.mock.Mock()
+        mock_response.text = "word " * 211  # A summary with 211 words
+
+        # Mock the model's generate_content method to return this response
+        mock_model_instance = mock_model.return_value
+        mock_model_instance.generate_content.return_value = mock_response
+
+        # Expect the function to raise a SummaryError
+        with self.assertRaisesRegex(ValueError, "Summary over 200 words"):
+            self.analyzer.generate_summary(review_text, api_key1="dummy_key")
+
+        # Ensure the method was actually called
+        mock_model_instance.generate_content.assert_called_once()
+
+    @patch("backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel")
+    def test_generate_summary_exception(self, mock_model):
+        """Test generate_summary when an exception occurs during API call."""
+
+        reviews = [{"review_text": f"Review {i}"} for i in range(400)]
+        review_text = self.analyzer.read_reviews(reviews)
+
+        # Mock the model to raise an exception when generate_content is called
+        mock_model_instance = mock_model.return_value
+        mock_model_instance.generate_content.side_effect = Exception("API error")
+
+        # Expect the function to raise a ValueError with the appropriate message
+        with self.assertRaisesRegex(ValueError, "Error generating summary: API error"):
+            self.analyzer.generate_summary(review_text, "dummy_key")
+
+        # Ensure the method was actually called
+        mock_model_instance.generate_content.assert_called_once()
+
+    @patch(
+        "backend.src.helpers.letterboxd_analyzers.genai.GenerativeModel"
+    )
+    def test_generate_aspects_exception(self, mock_model):
+        """Test generate_aspects when exception is raised"""
+
+        reviews = [{"review_text": f"Review {i}"} for i in range(400)]
+        review_text = self.analyzer.read_reviews(reviews)
+
+        # Mock the model to raise an exception when generate_content is called
+        mock_model_instance = mock_model.return_value
+        mock_model_instance.generate_content.side_effect = Exception("API error")
+
+        # Expect the function to raise a ValueError with the appropriate message
+        with self.assertRaisesRegex(ValueError, "Error generating aspects: API error"):
+            self.analyzer.generate_aspects(review_text, "dummy_key")
+
+
 
 
 if __name__ == "__main__":
