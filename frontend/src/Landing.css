@@ -1,0 +1,167 @@
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #141414;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+.container {
+  text-align: center;
+  max-width: 500px;
+  padding: 20px;
+}
+
+.logo {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 40px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-circles {
+  display: flex;
+  margin-right: 15px;
+}
+
+.circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.circle-blue {
+  background-color: #40bcf4;
+}
+
+.circle-green {
+  background-color: #00e054;
+}
+
+.circle-orange {
+  background-color: #ff8000;
+}
+
+.search-container {
+  width: 100%;
+  position: relative;
+  margin-bottom: 30px;
+  height: 56px;
+}
+
+.search-box {
+  width: 100%;
+  padding: 15px;
+  padding-left: 20px;
+  border-radius: 30px;
+  border: none;
+  font-size: 18px;
+  background-color: #2a2a2a;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.search-box:focus {
+  outline: none;
+  box-shadow: 0 0 15px rgba(255, 128, 0, 0.5);
+}
+
+.search-box::placeholder {
+  color: transparent;
+}
+
+.placeholder-animation-container {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  width: calc(100% - 40px);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 18px;
+  position: relative;
+  display: inline-block;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 18px;
+  background-color: #999;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.button {
+  padding: 12px 24px;
+  border-radius: 25px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 48%;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button:hover {
+  transform: scale(1.05);
+}
+
+.summary-button {
+  background-color: #3498db;
+  color: white;
+  box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+.summary-button:hover {
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.8);
+}
+
+.roast-button {
+  background-color: #e74c3c;
+  color: white;
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.7);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.roast-button:hover {
+  box-shadow: 0 0 25px rgba(255, 69, 0, 1);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+}
