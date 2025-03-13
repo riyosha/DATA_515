@@ -232,7 +232,6 @@ def letterboxd_user_stats_scraper(username: str) -> None:
             "Longest Streak (days)",
             "Days with 2+ Films"
         ])
-        # Write all stat values in a single row
         writer.writerow([
             stats["num_years"],
             stats["num_hours"],
@@ -241,4 +240,3 @@ def letterboxd_user_stats_scraper(username: str) -> None:
             stats["longest_streak"],
             stats["two_plus_film_days"]
         ])
-

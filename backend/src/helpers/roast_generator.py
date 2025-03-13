@@ -68,7 +68,7 @@ def generate_funny_roast(username: str, api_key: str) -> None:
     except (ValueError, IOError) as error:
         print(f"Error processing files: {error}")
         sys.exit(1)
-    except Exception as error:
+    except Exception as error:  # pylint: disable=broad-exception-caught
         print(f"Error: {error}")
         sys.exit(1)
 
@@ -99,4 +99,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
