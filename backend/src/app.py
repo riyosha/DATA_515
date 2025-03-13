@@ -10,11 +10,16 @@ from helpers.letterboxd_analyzers import LetterboxdReviewAnalyzer
 
 load_dotenv()
 # Set up Google Gemini API key
-'''    api_keys_rio = os.getenv("GEMINI_API_KEY_RIO", "").split(",")
-    api_keys_sai = os.getenv("GEMINI_API_KEY_SAI", "").split(",")
-    for i in range(3): '''
-api_key1 = os.getenv("GEMINI_API_KEY_RIO2")
-api_key2 = os.getenv("GEMINI_API_KEY_SAI2")
+
+GEMINI_API_KEY_RIO1 = os.getenv("GEMINI_API_KEY_RIO")
+GEMINI_API_KEY_RIO2 = os.getenv("GEMINI_API_KEY_RIO2")
+GEMINI_API_KEY_RIO3 = os.getenv("GEMINI_API_KEY_RIO3")
+GEMINI_API_KEY_SAI1 = os.getenv("GEMINI_API_KEY_SAI")
+GEMINI_API_KEY_SAI2 = os.getenv("GEMINI_API_KEY_SAI2")
+GEMINI_API_KEY_SAI3 = os.getenv("GEMINI_API_KEY_SAI3")
+
+GEMINI_API_KEY_RIO = [GEMINI_API_KEY_RIO1, GEMINI_API_KEY_RIO2, GEMINI_API_KEY_RIO3]
+GEMINI_API_KEY_SAI = [GEMINI_API_KEY_SAI1, GEMINI_API_KEY_SAI2, GEMINI_API_KEY_SAI3]
 
 analyze = LetterboxdReviewAnalyzer()
 
@@ -54,7 +59,7 @@ def reviews():
             return jsonify({'error': 'film_url is required'}), 400
         reviews = scrape_reviews(film_url)
         reviews_text = analyze.read_reviews(reviews)
-        summary, aspects = analyze.get_results(reviews_text,api_key1,api_key2)
+        summary, aspects = analyze.get_results(reviews_text,GEMINI_API_KEY_RIO,GEMINI_API_KEY_SAI)
 
 
         return jsonify({
