@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Letterboxd Roast Generator
 
@@ -6,20 +7,21 @@ and stats using Google's Gemini API.
 """
 
 import os
+import sys
 import pandas as pd
 import google.generativeai as genai
 
 
 def generate_funny_roast(username: str, api_key: str) -> None:
     """
-    Generates a savage yet hilarious roast for a Letterboxd user
-    based on their review data and stats.
+    Generates a savage yet hilarious roast for a Letterboxd user based on their
+    review data and stats.
 
     Args:
         username (str): Letterboxd username for file retrieval.
         api_key (str): API key for Google Gemini AI authentication.
     """
-    # Configure the Gemini API with the provided API key.
+    # Configure the Gemini API with the provided API key
     genai.configure(api_key=api_key)
 
     reviews_file = f"{username}_reviews.csv"
@@ -35,10 +37,9 @@ def generate_funny_roast(username: str, api_key: str) -> None:
             stats_text = stats_df.to_string(index=False)
 
         prompt = f"""
-        You are a ruthlessly funny film critic. Roast this user’s Letterboxd taste 
-        with quick, savage, and hilarious burns. Keep it sharp, fast, and witty.
-        Just pure cinematic destruction.
-
+        You are a ruthlessly funny film critic. Roast this user's Letterboxd taste with quick, savage, 
+        and hilarious burns. Keep it sharp, fast, and witty. Just pure cinematic destruction.
+        
         - Open with a brutal one-liner about their taste.
         - Call out their worst takes—a classic they trashed or an embarrassing 5-star.
         - Mock their genre obsession—do they live in horror? Worship romcoms?
@@ -46,14 +47,11 @@ def generate_funny_roast(username: str, api_key: str) -> None:
         - Roast their review style—one-word nonsense? Cringe poetry? Wikipedia summaries?
         - If stats exist, find the funniest thing (most-watched actor, absurd runtime, etc.).
         - End with a movie recommendation so painfully accurate it stings.
-
+        
         ---
-        Their Reviews:
-        {reviews_text}
-
-        Their Stats:
-        {stats_text}
-
+        Their Reviews: {reviews_text}
+        Their Stats: {stats_text}
+        
         Now, let them have it.
         """
 
@@ -65,20 +63,44 @@ def generate_funny_roast(username: str, api_key: str) -> None:
 
     except FileNotFoundError:
         print(f"Error: Could not find file '{reviews_file}'. Make sure the username is correct.")
-    except Exception as error:
-        print(f"Error generating roast: {error}")
+        sys.exit(1)
+    except pd.errors.EmptyDataError:
+        print(f"Error: The file '{reviews_file}' is empty or not properly formatted.")
+        sys.exit(1)
+    except (ValueError, IOError) as error:
+        print(f"Error processing files: {error}")
+        sys.exit(1)
 
 
-def main():
-    # Retrieve the API key from the environment variable.
-    API_KEY = os.getenv("GEMINI_API_KEY")
-    if not API_KEY:
+def get_api_key() -> str:
+    """
+    Retrieves the API key from environment variables.
+
+    Returns:
+        str: The API key for Gemini.
+
+    Raises:
+        EnvironmentError: If the API key is not found.
+    """
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
         raise EnvironmentError("API key not found. Please set GEMINI_API_KEY.")
+    return api_key
 
-    username = input("Enter the Letterboxd username: ").strip()
-    generate_funny_roast(username, API_KEY)
+
+def main() -> None:
+    """Main function to run the Letterboxd roast generator."""
+    try:
+        api_key = get_api_key()
+        username = input("Enter the Letterboxd username: ").strip()
+        if not username:
+            print("Error: Username cannot be empty.")
+            sys.exit(1)
+        generate_funny_roast(username, api_key)
+    except EnvironmentError as error:
+        print(f"Setup error: {error}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
     main()
-
