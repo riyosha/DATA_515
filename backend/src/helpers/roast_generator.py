@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
 Letterboxd Roast Generator
-
 This script generates a brutally funny roast based on a user's Letterboxd reviews
 and stats using Google's Gemini API.
 """
@@ -16,7 +15,6 @@ def generate_funny_roast(username: str, api_key: str) -> None:
     """
     Generates a savage yet hilarious roast for a Letterboxd user based on their
     review data and stats.
-
     Args:
         username (str): Letterboxd username for file retrieval.
         api_key (str): API key for Google Gemini AI authentication.
@@ -70,15 +68,16 @@ def generate_funny_roast(username: str, api_key: str) -> None:
     except (ValueError, IOError) as error:
         print(f"Error processing files: {error}")
         sys.exit(1)
+    except Exception as error:
+        print(f"Error: {error}")
+        sys.exit(1)
 
 
 def get_api_key() -> str:
     """
     Retrieves the API key from environment variables.
-
     Returns:
         str: The API key for Gemini.
-
     Raises:
         EnvironmentError: If the API key is not found.
     """
@@ -90,17 +89,14 @@ def get_api_key() -> str:
 
 def main() -> None:
     """Main function to run the Letterboxd roast generator."""
-    try:
-        api_key = get_api_key()
-        username = input("Enter the Letterboxd username: ").strip()
-        if not username:
-            print("Error: Username cannot be empty.")
-            sys.exit(1)
-        generate_funny_roast(username, api_key)
-    except EnvironmentError as error:
-        print(f"Setup error: {error}")
+    api_key = get_api_key()
+    username = input("Enter the Letterboxd username: ").strip()
+    if not username:
+        print("Error: Username cannot be empty.")
         sys.exit(1)
+    generate_funny_roast(username, api_key)
 
 
 if __name__ == "__main__":
     main()
+

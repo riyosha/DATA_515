@@ -17,14 +17,11 @@ class ScraperError(Exception):
 def validate_letterboxd_user(username: str) -> bool:
     """
     Validate if a Letterboxd user exists.
-
     This function checks if the given username corresponds to a valid
     Letterboxd profile by fetching the profile URL and looking for error
     indicators in the page content.
-
     Parameters:
         username (str): The Letterboxd username.
-
     Returns:
         bool: True if the user profile is valid, False otherwise.
     """
@@ -48,10 +45,8 @@ def validate_letterboxd_user(username: str) -> bool:
 def _extract_movie_details(element) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
     Extract movie name, URL, and year from a review element.
-
     Parameters:
         element: BeautifulSoup element containing movie information.
-
     Returns:
         Tuple containing movie name, URL, and year.
     """
@@ -72,10 +67,8 @@ def _extract_movie_details(element) -> Tuple[Optional[str], Optional[str], Optio
 def _extract_review_details(element) -> Tuple[Optional[str], Optional[str], Optional[str]]:
     """
     Extract rating, watched date, and review text from a review element.
-
     Parameters:
         element: BeautifulSoup element containing review information.
-
     Returns:
         Tuple containing rating, watched date, and review text.
     """
@@ -94,11 +87,9 @@ def _extract_review_details(element) -> Tuple[Optional[str], Optional[str], Opti
 def _process_review_page(base_url: str, page: int) -> List[List[Optional[str]]]:
     """
     Process a single page of reviews and extract all review data.
-
     Parameters:
         base_url (str): Base URL of the user profile.
         page (int): Page number to process.
-
     Returns:
         List of review data for the page.
     """
@@ -130,14 +121,11 @@ def _process_review_page(base_url: str, page: int) -> List[List[Optional[str]]]:
 def letterboxd_user_reviews_scraper(username: str) -> None:
     """
     Scrape and save a Letterboxd user's reviews to a CSV file.
-
     The function retrieves all review pages from the user's review section,
     extracts details such as movie name, URL, year, rating, watched date, and
     review text, and writes them into a CSV file named '{username}_reviews.csv'.
-
     Parameters:
         username (str): The Letterboxd username.
-
     Raises:
         ScraperError: If the user profile page cannot be retrieved.
     """
@@ -180,10 +168,8 @@ def letterboxd_user_reviews_scraper(username: str) -> None:
 def _extract_stats_values(stats_elements) -> Dict[str, str]:
     """
     Extract stat values from the stats elements.
-
     Parameters:
         stats_elements: List of BeautifulSoup elements containing stats.
-
     Returns:
         Dictionary containing stat names and values.
     """
@@ -202,15 +188,12 @@ def _extract_stats_values(stats_elements) -> Dict[str, str]:
 def letterboxd_user_stats_scraper(username: str) -> None:
     """
     Scrape and save a Letterboxd user's stats to a CSV file.
-
     The function fetches the user's stats page and extracts statistics such as
     number of years, total hours watched, number of directors, number of countries,
     longest streak, and days with 2+ films. The data is saved into a CSV file named
     '{username}_stats.csv'.
-
     Parameters:
         username (str): The Letterboxd username.
-
     Raises:
         ScraperError: If the stats page cannot be retrieved or if no stats are available.
     """
@@ -249,7 +232,8 @@ def letterboxd_user_stats_scraper(username: str) -> None:
             "Longest Streak (days)",
             "Days with 2+ Films"
         ])
-        writer.writerows([
+        # Write all stat values in a single row
+        writer.writerow([
             stats["num_years"],
             stats["num_hours"],
             stats["num_directors"],
@@ -257,3 +241,4 @@ def letterboxd_user_stats_scraper(username: str) -> None:
             stats["longest_streak"],
             stats["two_plus_film_days"]
         ])
+
