@@ -1,84 +1,148 @@
 """
-Letterboxd Roast Generator
-
-This script generates a brutally funny roast based on a user's Letterboxd reviews
-and stats using Google's Gemini API.
+Module containing functions for generating a savage roast based on
+Letterboxd user reviews and statistics.
 """
 
-import os
-import pandas as pd
 import google.generativeai as genai
 
 
-def generate_funny_roast(username: str, api_key: str) -> None:
+class RoastGenerationError(Exception):
+    """Custom exception for roast generation errors."""
+
+
+class LetterboxdRoastAnalyzer:
     """
-    Generates a savage yet hilarious roast for a Letterboxd user
-    based on their review data and stats.
-
-    Args:
-        username (str): Letterboxd username for file retrieval.
-        api_key (str): API key for Google Gemini AI authentication.
+    A class for analyzing Letterboxd user reviews and statistics to generate a
+    brutally funny roast using an AI model.
     """
-    # Configure the Gemini API with the provided API key.
-    genai.configure(api_key=api_key)
 
-    reviews_file = f"{username}_reviews.csv"
-    stats_file = f"{username}_stats.csv"
+    SAFETY_SETTINGS = [
+        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+    ]
 
-    try:
-        reviews_df = pd.read_csv(reviews_file)
-        reviews_text = reviews_df.to_string(index=False)
-
-        stats_text = "No stats. Either a ghost or a cinematic criminal."
-        if os.path.exists(stats_file):
-            stats_df = pd.read_csv(stats_file)
-            stats_text = stats_df.to_string(index=False)
-
-        prompt = f"""
-        You are a ruthlessly funny film critic. Roast this user’s Letterboxd taste 
-        with quick, savage, and hilarious burns. Keep it sharp, fast, and witty.
-        Just pure cinematic destruction.
-
-        - Open with a brutal one-liner about their taste.
-        - Call out their worst takes—a classic they trashed or an embarrassing 5-star.
-        - Mock their genre obsession—do they live in horror? Worship romcoms?
-        - Drag their binge habits—Marvel cultist? Nicolas Cage devotee?
-        - Roast their review style—one-word nonsense? Cringe poetry? Wikipedia summaries?
-        - If stats exist, find the funniest thing (most-watched actor, absurd runtime, etc.).
-        - End with a movie recommendation so painfully accurate it stings.
-
-        ---
-        Their Reviews:
-        {reviews_text}
-
-        Their Stats:
-        {stats_text}
-
-        Now, let them have it.
+    def read_user_data(self, reviews_list, stats_dict):
         """
+        Reads reviews and statistics, and formats them into a single string.
 
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(prompt)
+        Args:
+            reviews_list (list): A list of dictionaries, each containing a
+                'review_text' key.
+            stats_dict (dict): A dictionary containing user statistics.
 
-        print("\nYour Letterboxd Roast:\n")
-        print(response.text)
+        Returns:
+            str: A string that combines all reviews and stats for prompt
+                generation.
 
-    except FileNotFoundError:
-        print(f"Error: Could not find file '{reviews_file}'. Make sure the username is correct.")
-    except Exception as error:
-        print(f"Error generating roast: {error}")
+        Raises:
+            ValueError: If reviews_list is empty.
+        """
+        if not reviews_list:
+            raise ValueError("No reviews provided.")
 
+        reviews_text = " >>> ".join(
+            element["review_text"]
+            for element in reviews_list
+            if "review_text" in element
+        )
 
-def main():
-    # Retrieve the API key from the environment variable.
-    API_KEY = os.getenv("GEMINI_API_KEY")
-    if not API_KEY:
-        raise EnvironmentError("API key not found. Please set GEMINI_API_KEY.")
+        if not stats_dict:
+            stats_text = "No statistics available."
+        else:
+            stats_lines = []
+            for key, value in stats_dict.items():
+                stats_lines.append(f"{key.replace('_', ' ').title()}: {value}")
+            stats_text = "\n".join(stats_lines)
 
-    username = input("Enter the Letterboxd username: ").strip()
-    generate_funny_roast(username, API_KEY)
+        combined_text = (
+            f"User Reviews:\n{reviews_text}\n\nUser Statistics:\n{stats_text}\n"
+        )
+        return combined_text
 
+    def generate_roast(self, user_data, api_key, safety="off"):
+        """
+        Generates a savage roast using the provided user data.
 
-if __name__ == "__main__":
-    main()
+        Args:
+            user_data (str): The combined reviews and stats text.
+            api_key (str): The API key for the AI model.
+            safety (str, optional): Safety mode for content generation.
+                Defaults to 'off'.
 
+        Returns:
+            str: The generated roast.
+
+        Raises:
+            RoastGenerationError: If the roast is too long or an error occurs.
+        """
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel("gemini-1.5-pro")
+
+        prompt = (
+            "\nYou are a ruthlessly funny film critic. Based solely on the following "
+            "user reviews and statistics, generate a savage, witty, and brutally honest "
+            "roast that skewers the user's cinematic taste and habits. Use humor and sharp "
+            "insights, but avoid overly offensive language.\n\n"
+            f"{user_data}\n\n"
+            "Additionally, for each movie, compute the difference between the user's rating "
+            "and the movie's average rating. Let:\n  - guilty_pleasure_movie = maximum "
+            "difference,\n  - unpopular_opinion = minimum difference.\n\n"
+            "Then, incorporate these observations:\n  - If guilty_pleasure_movie is less "
+            "than 2 and unpopular_opinion is greater than -2, add: "
+            "\"You are basic and have no original thoughts.\"\n  - If guilty_pleasure_movie "
+            "is greater than or equal to 2, ask: \"Do you really like that movie?\"\n  - If "
+            "unpopular_opinion is greater than -2, add: "
+            "\"You are alone on this one, everyone likes this movie, bro.\"\n\n"
+            "Ensure the roast is concise and impactful. Keep it strictly under 500 words in "
+            "5-7 steps."
+        )
+
+        if safety == "off":
+            prompt += "\n- Do not generate publicly offensive language."
+
+        response = model.generate_content(
+            prompt, safety_settings=self.SAFETY_SETTINGS
+        )
+        roast = response.text
+
+        if len(roast.split()) > 710:
+            raise RoastGenerationError("Roast generated is too long.")
+
+        return roast
+
+    def get_results(self, reviews_list, stats_dict, api_keys, safety="off"):
+        """
+        Generates the final roast by combining reviews and stats, and calling the AI
+        model using multiple API keys if needed.
+
+        Args:
+            reviews_list (list): A list of review dictionaries.
+            stats_dict (dict): A dictionary containing user statistics.
+            api_keys (list): A list of API keys for generating the roast.
+            safety (str, optional): Safety mode for content generation.
+                Defaults to 'off'.
+
+        Returns:
+            str: The generated roast.
+
+        Raises:
+            RoastGenerationError: If roast generation fails after multiple attempts.
+        """
+        user_data = self.read_user_data(reviews_list, stats_dict)
+        roast = None
+        for i, key in enumerate(api_keys):
+            try:
+                roast = self.generate_roast(user_data, key, safety=safety)
+                if roast and roast.strip():
+                    break
+            except Exception as error:  # pylint: disable=broad-exception-caught
+                print(f"Error generating roast with API key {i}: {error}")
+                continue
+        else:
+            raise RoastGenerationError(
+                "Failed to generate roast after multiple attempts."
+            )
+
+        return roast
