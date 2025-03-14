@@ -25,4 +25,5 @@ dependencies:
       - coverage
       - flask 
       - google-generativeai
+      - pandas
       - unittest2
