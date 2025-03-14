@@ -1,6 +1,6 @@
 """
-Module containing functions for generating a savage roast based on
-Letterboxd user reviews and statistics.
+Module containing functions for generating a savage roast based on Letterboxd
+user reviews and statistics.
 """
 
 import google.generativeai as genai
@@ -35,12 +35,14 @@ class LetterboxdRoastAnalyzer:
         if not reviews_list:
             raise ValueError("No reviews provided.")
 
+        # Combine reviews by joining each review_text with a delimiter.
         reviews_text = " >>> ".join(
             element["review_text"]
             for element in reviews_list
             if "review_text" in element
         )
 
+        # Format stats into a neat string; if no stats provided, use a default message.
         if not stats_dict:
             stats_text = "No statistics available."
         else:
@@ -49,20 +51,19 @@ class LetterboxdRoastAnalyzer:
                 stats_lines.append(f"{key.replace('_', ' ').title()}: {value}")
             stats_text = "\n".join(stats_lines)
 
+        # Combine the reviews and stats into one string.
         combined_text = (
             f"User Reviews:\n{reviews_text}\n\nUser Statistics:\n{stats_text}\n"
         )
         return combined_text
 
-    def generate_roast(self, user_data, api_key, safety="off"):
+    def generate_roast(self, user_data, api_key):
         """
         Generates a savage roast using the provided user data.
 
         Args:
             user_data (str): The combined reviews and stats text.
             api_key (str): The API key for the AI model.
-            safety (str, optional): Safety mode for content generation.
-                Defaults to 'off'.
 
         Returns:
             str: The generated roast.
@@ -92,12 +93,7 @@ class LetterboxdRoastAnalyzer:
             "5-7 steps."
         )
 
-        if safety == "off":
-            prompt += "\n- Do not generate publicly offensive language."
-
-        response = model.generate_content(
-            prompt, safety_settings=self.SAFETY_SETTINGS
-        )
+        response = model.generate_content(prompt)
         roast = response.text
 
         if len(roast.split()) > 710:
@@ -105,7 +101,7 @@ class LetterboxdRoastAnalyzer:
 
         return roast
 
-    def get_results(self, reviews_list, stats_dict, api_keys, safety="off"):
+    def get_results(self, reviews_list, stats_dict, api_keys):
         """
         Generates the final roast by combining reviews and stats, and calling the AI
         model using multiple API keys if needed.
@@ -114,8 +110,6 @@ class LetterboxdRoastAnalyzer:
             reviews_list (list): A list of review dictionaries.
             stats_dict (dict): A dictionary containing user statistics.
             api_keys (list): A list of API keys for generating the roast.
-            safety (str, optional): Safety mode for content generation.
-                Defaults to 'off'.
 
         Returns:
             str: The generated roast.
@@ -127,7 +121,7 @@ class LetterboxdRoastAnalyzer:
         roast = None
         for i, key in enumerate(api_keys):
             try:
-                roast = self.generate_roast(user_data, key, safety=safety)
+                roast = self.generate_roast(user_data, key)
                 if roast and roast.strip():
                     break
             except Exception as error:  # pylint: disable=broad-exception-caught
