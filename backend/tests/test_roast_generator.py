@@ -62,7 +62,7 @@ class TestLetterboxdRoastAnalyzer(unittest.TestCase):
             "User Reviews: Great movie!\n\n"
             "User Statistics: Total Hours Watched: 120"
         )
-        roast = self.analyzer.generate_roast(user_data, "fake-api-key", safety="off")
+        roast = self.analyzer.generate_roast(user_data, "fake-api-key")
         self.assertEqual(roast, "Savage roast text.")
         args, _ = fake_model.generate_content.call_args
         prompt = args[0]
@@ -81,7 +81,7 @@ class TestLetterboxdRoastAnalyzer(unittest.TestCase):
 
         user_data = "User Reviews: Test\n\nUser Statistics: Test"
         with self.assertRaises(RoastGenerationError):
-            self.analyzer.generate_roast(user_data, "fake-api-key", safety="off")
+            self.analyzer.generate_roast(user_data, "fake-api-key")
 
     # Tests for get_results
     @patch.object(LetterboxdRoastAnalyzer, "generate_roast")
@@ -96,7 +96,7 @@ class TestLetterboxdRoastAnalyzer(unittest.TestCase):
         reviews = [{"review_text": "Great movie!"}]
         stats = {"num_years": 5}
         api_keys = ["key1", "key2"]
-        result = self.analyzer.get_results(reviews, stats, api_keys, safety="off")
+        result = self.analyzer.get_results(reviews, stats, api_keys)
         self.assertEqual(result, fake_roast)
         mock_generate_roast.assert_called_once()
 
@@ -111,7 +111,7 @@ class TestLetterboxdRoastAnalyzer(unittest.TestCase):
         stats = {"total_hours_watched": 100}
         api_keys = ["key1", "key2", "key3"]
         with self.assertRaises(RoastGenerationError):
-            self.analyzer.get_results(reviews, stats, api_keys, safety="off")
+            self.analyzer.get_results(reviews, stats, api_keys)
 
 
 if __name__ == "__main__":
