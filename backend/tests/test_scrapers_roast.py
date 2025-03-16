@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from src.helpers.scrapers_roast import (
     validate_letterboxd_user,
     fetch_html_content,
-    _parse_review_element,
+    parse_review_element,
     scrape_user_reviews,
     scrape_user_stats,
     ScraperError,
@@ -87,7 +87,7 @@ class TestScrapersRoast(unittest.TestCase):
         )
         soup = BeautifulSoup(html, "html.parser")
         element = soup.find("div", class_="film-detail-content")
-        result = _parse_review_element(element)
+        result = parse_review_element(element)
         expected = {
             "movie_name": "Test Movie",
             "movie_url": "https://letterboxd.com/film/movie-slug/",

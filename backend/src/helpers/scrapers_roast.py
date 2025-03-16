@@ -58,7 +58,7 @@ def fetch_html_content(url, headers):
     raise ScraperError(f"Failed to fetch {url}. Status code: {response.status_code}")
 
 
-def _parse_review_element(element):
+def parse_review_element(element):
     """
     Parses a review element from Letterboxd and returns a dictionary of review details.
 
@@ -136,7 +136,7 @@ def scrape_user_reviews(username, n_pages=10):
         except ScraperError:
             continue
         for element in page_soup.find_all("div", class_="film-detail-content"):
-            reviews.append(_parse_review_element(element))
+            reviews.append(parse_review_element(element))
     return reviews
 
 
