@@ -36,32 +36,12 @@ def scraping_movie_details():
             return jsonify({'error': 'film_url is required'}), 400
 
         movie_details = movie_details_scraper(film_url)
-        return jsonify({
-            'movie_details': movie_details,
-        })
-
-    except KeyError:
-        return jsonify({'error': 'Invalid JSON format or missing key'}), 400
-    except ValueError as ve:
-        return jsonify({'error': f'Value error: {str(ve)}'}), 400
-    except requests.exceptions.RequestException as re:
-        return jsonify({'error': f'Request failed: {str(re)}'}), 500
-
-@app.route('/summary_aspects', methods=['POST'])
-def summary_and_aspects():
-    """Scrapes reviews from a Letterboxd movie page"""
-    try:
-        data = request.get_json()
-        film_url = data.get('film_url')
-
-        if not film_url:
-            return jsonify({'error': 'film_url is required'}), 400
         reviews = scrape_reviews(film_url)
         reviews_text = analyze.read_reviews(reviews)
         summary, aspects = analyze.get_results(reviews_text,GEMINI_API_KEY_RIO,GEMINI_API_KEY_SAI)
 
-
         return jsonify({
+            'movie_details': movie_details,
             'summary': summary,
             'aspects': aspects
         })
