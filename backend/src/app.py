@@ -7,6 +7,8 @@ import requests
 from flask import Flask, request, jsonify
 from helpers.scrapers import movie_details_scraper,scrape_reviews
 from helpers.letterboxd_analyzers import LetterboxdReviewAnalyzer
+from helpers.roast_generator import LetterboxdRoastAnalyzer
+from helpers.scrapers_roast import scrape_user_reviews,scrape_user_stats
 
 load_dotenv()
 # Set up Google Gemini API key
@@ -22,6 +24,7 @@ GEMINI_API_KEY_SAI = [GEMINI_API_KEY_SAI1, GEMINI_API_KEY_SAI2, GEMINI_API_KEY_S
 
 
 analyze = LetterboxdReviewAnalyzer()
+roaster = LetterboxdRoastAnalyzer()
 
 app = Flask(__name__)
 
@@ -44,6 +47,31 @@ def scraping_movie_details():
             'movie_details': movie_details,
             'summary': summary,
             'aspects': aspects
+        })
+
+    except KeyError:
+        return jsonify({'error': 'Invalid JSON format or missing key'}), 400
+    except ValueError as ve:
+        return jsonify({'error': f'Value error: {str(ve)}'}), 400
+    except requests.exceptions.RequestException as re:
+        return jsonify({'error': f'Request failed: {str(re)}'}), 500
+
+@app.route('/roast', methods=['POST'])
+def username_roast():
+    """Roasts the user based on their Letterboxd profile"""
+    try:
+        data = request.get_json()
+        username = data.get('username')
+
+        if not username:
+            return jsonify({'error': 'username is required'}), 400
+
+        user_reviews = scrape_user_reviews(username, n_pages=10)
+        user_stats = scrape_user_stats(username)
+        roast = roaster.get_results(user_reviews,user_stats,GEMINI_API_KEY_SAI)
+
+        return jsonify({
+            'roast': roast
         })
 
     except KeyError:
