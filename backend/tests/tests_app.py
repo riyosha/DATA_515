@@ -5,7 +5,7 @@ Unit tests for the Flask application.
 import unittest
 from unittest.mock import patch
 import requests
-from app import app
+from src.app import app
 
 
 class TestFlaskApp(unittest.TestCase):
