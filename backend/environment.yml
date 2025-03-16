@@ -26,3 +26,4 @@ dependencies:
       - flask 
       - google-generativeai
       - unittest2
+      - dotenv

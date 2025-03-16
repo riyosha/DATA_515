@@ -6,7 +6,7 @@ from src.app import app
 
 class TestFlaskApp(unittest.TestCase):
     """Test cases for the Flask application."""
-    
+
     def setUp(self):
         """Set up the test client."""
         app.testing = True
@@ -26,7 +26,7 @@ class TestFlaskApp(unittest.TestCase):
     @patch("helpers.scrapers.movie_details_scraper")
     def test_scraping_movie_details_missing_url(self, mock_movie_details_scraper):
         """Test movie details scraping with a missing URL."""
-        del mock_movie_details_scraper 
+        del mock_movie_details_scraper
         response = self.client.post("/movie_details", json={})
         self.assertEqual(response.status_code, 400)
         data = response.get_json()
