@@ -49,7 +49,39 @@ class LetterboxdReviewAnalyzer:
             ]
             return " >>>".join(reviews)
         except Exception as e:
-            raise ValueError(f"No reviews found in the provided list due to error {e}") from e
+            raise ValueError(
+                f"No reviews found in the provided list due to error {e}"
+            ) from e
+
+    def read_user_data(self, reviews_list):
+        """
+        Reads reviews and statistics, and formats them into a single string.
+
+        Args:
+            reviews_list (list): A list of dictionaries, each containing a
+                'review_text' key.
+        Returns:
+            str: A string that combines all reviews for prompt
+                generation.
+
+        Raises:
+            ValueError: If reviews_list is empty.
+        """
+        if not reviews_list:
+            raise ValueError("No reviews provided.")
+
+        # Combine reviews by joining each review_text with a delimiter.
+        reviews_text = " >>> ".join(
+            element["movie_name"]
+            + ", "
+            + element["rating"]
+            + ": "
+            + element["review_text"]
+            for element in reviews_list
+            if "review_text" in element and "rating" in element
+        )
+
+        return reviews_text
 
     def generate_summary(self, reviews, api_key1, safety="off"):
         """
@@ -162,7 +194,7 @@ class LetterboxdReviewAnalyzer:
             return response.text
 
         except Exception as error:
-            raise ValueError(f'Error generating aspects: {error}') from error
+            raise ValueError(f"Error generating aspects: {error}") from error
 
     def aspect_processor(self, aspect_string):
         """
@@ -217,13 +249,73 @@ class LetterboxdReviewAnalyzer:
                     print(f"Invalid format for aspect '{aspect}'. Skipping.")
                     continue  # Skip to the next aspect
 
-            aspects.sort(reverse=True, key=lambda x: x[1]+x[2])
+            aspects.sort(reverse=True, key=lambda x: x[1] + x[2])
 
             return aspects
 
         except (json.JSONDecodeError, AssertionError, ValueError) as error:
             print(error)
-            raise  # Re-raise the exception
+            raise
+
+    def generate_taste_match(
+        self, user_reviews, movie_reviews, movie_name, api_key3
+    ):
+        """
+        Generate a taste match paragraph for a user and a given movie.
+
+        Args:
+            user_reviews (str): The user reviews to analyze.
+            movie_reviews (str): The movie reviews to analyze.
+            api_key3 (str): The API key for the AI model.
+            safety (str, optional): Safety mode for content generation. Defaults to 'off'.
+
+        Returns:
+            str: The generated taste match analysis.
+        """
+        try:
+            genai.configure(api_key=api_key3)
+            model3 = genai.GenerativeModel("gemini-1.5-pro")
+
+            prompt = f"""
+                        The moview_reviews is a collection of movie reviews from Letterboxd. 
+                        Each new review starts with ">>>".
+
+                        The user_reviews is a collection of a Letterboxd user's movie reviews from Letterboxd. 
+                        Each new review starts with ">>>", with this format "movie_name, rating: review_text".
+
+                        Please analyze both these data and generate a paragraph about the taste match
+                        of the user and the movie. 
+                        
+                        Check if the {movie_name} is present in the user reviews. If it is,
+                        then DO NOT generate a taste match paragraph for this movie.
+                        simply return the user's own review like this - 
+                        'You've already reviewed this movie! You said - (user's own review text, without the movie name and rating)'
+                        
+                        Otherwise, depending on the aspects the user has liked/disliked 
+                        the most in their own reviews, what might they like/dislike about this particular movie? 
+                        Keep your response brief and *STRCITLY* under 200 words and don't give spoilers.
+                        Address it to the user themself in 2nd person.
+
+                        
+
+                        movie_reviews:
+                        {movie_reviews}
+                        user_reviews:
+                        {user_reviews}
+                    """
+
+            prompt += "\n- Do not generate publicly offensive language."
+
+            response = model3.generate_content(
+                prompt, safety_settings=self.SAFETY_SETTINGS
+            )
+            if len(response.text.split()) > 210:
+                raise SummaryError("Summary over 200 words")
+
+            return response.text
+
+        except Exception as error:
+            raise ValueError(f"Error generating taste match: {error}") from error
 
     def get_results(self, reviews, api_key1, api_key2, safety="off"):
         """
@@ -238,7 +330,7 @@ class LetterboxdReviewAnalyzer:
         Returns:
             tuple: A tuple containing the generated summary (str) and the aspect list (list).
         """
-        if len(reviews.strip()) < 400:
+        if len(reviews.split()) < 400:
             raise ValueError("Not enough reviews found")
         summary = None
         for i in range(3):
@@ -266,3 +358,40 @@ class LetterboxdReviewAnalyzer:
             aspect_list = None
 
         return summary, aspect_list
+
+    def get_taste_match_result(
+        self, user_reviews, movie_reviews, movie_name, api_key3
+    ):
+        """
+        Generates a taste match summary between given movie reviews and user reviews.
+
+        Args:
+            movie_reviews (str): The movie reviews to analyze.
+            user_reviews (str): The user reviews to analyze.
+            api_key3 (list): A list of API keys for generating aspect analysis.
+            safety (str, optional): Safety mode for content generation. Defaults to 'off'.
+
+        Returns:
+            string: a <= 200 word taste match summary.
+        """
+        if len(user_reviews.split()) < 100:
+            raise ValueError("Not enough user reviews found")
+        if len(movie_reviews.split()) < 400:
+            raise ValueError("Not enough movie reviews found")
+
+        taste_match = None
+        for i in range(3):
+            try:
+                taste_match = self.generate_taste_match(
+                    user_reviews, movie_reviews, movie_name, api_key3[i]
+                )
+                if len(taste_match.split()) > 210:
+                    raise SummaryError("Taste match too long")
+                break
+            except (SummaryError, ValueError, TypeError, KeyError) as error:
+                print(f"Error generating taste match: {error}")
+                continue
+        else:
+            print("Failed to generate taste match after 3 tries")
+
+        return taste_match
