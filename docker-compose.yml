@@ -11,6 +11,8 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     env_file:
       - .env
+    networks:
+      - app-network
 
   frontend:
     build: ./frontend
@@ -21,3 +23,9 @@ services:
     tty: true
     depends_on:
       - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

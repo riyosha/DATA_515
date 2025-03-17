@@ -12,4 +12,16 @@ export default defineConfig({
       reporter: ["text", "json", "lcov"],
     },
   },
+  server: {
+    host: '0.0.0.0', // Necessary for Docker
+    port: 5173,
+    proxy: {
+      // Proxy API requests to the backend container
+      '/api': {
+        target: 'http://backend:5515', // Use the service name for Docker communication
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 });

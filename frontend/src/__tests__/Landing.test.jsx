@@ -17,7 +17,7 @@ describe('Landing Component', () => {
     mockNavigate.mockReset();
   });
 
-  test('navigates to movie-info page when Movie Summary button is clicked with input', () => {
+  test('navigates to movie page when Movie Summary button is clicked with input', () => {
     render(<Landing />);
 
     // Enter text in the search box
@@ -31,7 +31,7 @@ describe('Landing Component', () => {
     fireEvent.click(summaryButton);
 
     // Check if navigate was called with the correct parameters
-    expect(mockNavigate).toHaveBeenCalledWith('/movie-info', {
+    expect(mockNavigate).toHaveBeenCalledWith('/movie', {
       state: { searchQuery: 'letterboxd.com/username' },
     });
   });
