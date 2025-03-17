@@ -16,10 +16,10 @@ class TestFlaskApp(unittest.TestCase):
         app.testing = True
         self.client = app.test_client()
 
-    @patch("helpers.scrapers.movie_details_scraper")
-    @patch("helpers.scrapers.scrape_reviews")
-    @patch("helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_results")
-    @patch("helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.read_reviews")
+    @patch("src.chelpers.scrapers.movie_details_scraper")
+    @patch("src.helpers.scrapers.scrape_reviews")
+    @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_results")
+    @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.read_reviews")
     def test_scraping_movie_details_success(
         self, mock_read_reviews, mock_get_results, mock_scrape_reviews, mock_movie_details_scraper
     ):
@@ -68,7 +68,7 @@ class TestFlaskApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn("error", data)
 
-    @patch("helpers.scrapers.movie_details_scraper")
+    @patch("src.helpers.scrapers.movie_details_scraper")
     def test_scraping_movie_details_invalid_url(self, mock_movie_details_scraper):
         """Test movie details scraping with an invalid URL."""
         mock_movie_details_scraper.side_effect = ValueError("Invalid URL")
@@ -77,9 +77,9 @@ class TestFlaskApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn("error", data)
 
-    @patch("helpers.scrapers.movie_details_scraper")
-    @patch("helpers.scrapers.scrape_reviews")
-    @patch("helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_results")
+    @patch("src.helpers.scrapers.movie_details_scraper")
+    @patch("src.helpers.scrapers.scrape_reviews")
+    @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_results")
     def test_scraping_movie_details_request_exception(
         self, _mock_get_results, _mock_scrape_reviews, mock_movie_details_scraper
     ):
@@ -92,9 +92,9 @@ class TestFlaskApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn("error", data)
 
-    @patch("helpers.scrapers_roast.scrape_user_reviews")
-    @patch("helpers.scrapers_roast.scrape_user_stats")
-    @patch("helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
+    @patch("src.helpers.scrapers_roast.scrape_user_reviews")
+    @patch("src.helpers.scrapers_roast.scrape_user_stats")
+    @patch("src.helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
     def test_username_roast_success(
         self, mock_get_results, mock_scrape_user_stats, mock_scrape_user_reviews
     ):
@@ -119,9 +119,9 @@ class TestFlaskApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn("error", data)
 
-@patch("helpers.scrapers_roast.scrape_user_reviews")
-@patch("helpers.scrapers_roast.scrape_user_stats")
-@patch("helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
+@patch("src.helpers.scrapers_roast.scrape_user_reviews")
+@patch("src.helpers.scrapers_roast.scrape_user_stats")
+@patch("src.helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
 def test_username_roast_request_exception(
     self, mock_get_results, _mock_scrape_user_stats, mock_scrape_user_reviews
     ):
