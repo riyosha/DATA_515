@@ -27,4 +27,4 @@ dependencies:
       - flask-cors
       - google-generativeai
       - unittest2
-      - python-dotenv
+      - dotenv
