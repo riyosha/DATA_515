@@ -133,6 +133,37 @@ def test_username_roast_request_exception(
     data = response.get_json()
     self.assertIn("error", data)
 
+@patch("src.helpers.scrapers.scrape_reviews")
+@patch("src.helpers.scrapers_roast.scrape_user_reviews")
+@patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_taste_match_result")
+def test_taste_match_success(
+    self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews
+    ):
+    """Test successful taste match analysis."""
+    mock_scrape_reviews.return_value = ["Review 1", "Review 2"]
+    mock_scrape_user_reviews.return_value = ["User Review 1", "User Review 2"]
+    mock_get_taste_match_result.return_value = "You might like this movie!"
+
+    response = self.client.post(
+        "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/","username":"test_user"}
+    )
+    self.assertEqual(response.status_code, 200)
+    data = response.get_json()
+    self.assertIn("taste", data)
+
+def test_taste_match_missing_username(self):
+    """Test taste match with missing username field."""
+    response = self.client.post("/taste",json={"film_url":"https://letterboxd.com/film/mickey-17/"})
+    self.assertEqual(response.status_code, 400)
+    data = response.get_json()
+    self.assertIn("error", data)
+
+def test_taste_match_missing_film_url(self):
+    """Test taste match with missing film URL."""
+    response = self.client.post("/taste", json={"username": "test_user"})
+    self.assertEqual(response.status_code, 400)
+    data = response.get_json()
+    self.assertIn("error", data)
 
 if __name__ == "__main__":
     unittest.main()

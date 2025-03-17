@@ -81,5 +81,36 @@ def username_roast():
     except requests.exceptions.RequestException as re:
         return jsonify({'error': f'Request failed: {str(re)}'}), 500
 
+@app.route('/taste', methods=['POST'])
+def taste_match():
+    """Returns whether the movie is of the user's taste"""
+    try:
+        data = request.get_json()
+        film_url = data.get('film_url')
+        username = data.get('username')
+
+        if not username:
+            return jsonify({'error': 'username is required'}), 400
+
+        reviews = scrape_reviews(film_url,n=30)
+        reviews_text = analyze.read_reviews(reviews)
+        reviews_user = scrape_user_reviews(username, n_pages=10)
+        user_reviews = analyze.read_user_data(reviews_user)
+        movie_details = movie_details_scraper(film_url)
+        movie_name = movie_details.get('movie_name')
+        taste = analyze.get_taste_match_result(
+            user_reviews,reviews_text, movie_name, GEMINI_API_KEY_RIO)
+
+        return jsonify({
+            'taste': taste
+        })
+
+    except KeyError:
+        return jsonify({'error': 'Invalid JSON format or missing key'}), 400
+    except ValueError as ve:
+        return jsonify({'error': f'Value error: {str(ve)}'}), 400
+    except requests.exceptions.RequestException as re:
+        return jsonify({'error': f'Request failed: {str(re)}'}), 500
+
 if __name__ == '__main__':
     app.run()
