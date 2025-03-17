@@ -5,10 +5,10 @@ import os
 from dotenv import load_dotenv
 import requests
 from flask import Flask, request, jsonify
-from helpers.scrapers import movie_details_scraper,scrape_reviews
-from helpers.letterboxd_analyzers import LetterboxdReviewAnalyzer
-from helpers.roast_generator import LetterboxdRoastAnalyzer
-from helpers.scrapers_roast import scrape_user_reviews,scrape_user_stats
+from src.helpers.scrapers import movie_details_scraper,scrape_reviews
+from src.helpers.letterboxd_analyzers import LetterboxdReviewAnalyzer
+from src.helpers.roast_generator import LetterboxdRoastAnalyzer
+from src.helpers.scrapers_roast import scrape_user_reviews,scrape_user_stats
 
 load_dotenv()
 # Set up Google Gemini API key
