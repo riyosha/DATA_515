@@ -16,7 +16,7 @@ class TestFlaskApp(unittest.TestCase):
         app.testing = True
         self.client = app.test_client()
 
-    @patch("src.chelpers.scrapers.movie_details_scraper")
+    @patch("src.helpers.scrapers.movie_details_scraper")
     @patch("src.helpers.scrapers.scrape_reviews")
     @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_results")
     @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.read_reviews")
