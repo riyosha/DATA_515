@@ -113,7 +113,7 @@ const Landing = () => {
           className="button summary-button"
           onClick={() => {
             if (searchText.trim()) {
-              navigate('/movie-info', { state: { searchQuery: searchText } });
+              navigate('/movie', { state: { searchQuery: searchText } });
             }
           }}
         >

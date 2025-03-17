@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import MovieInfo from './MovieInfo';
 import Video from './Video';
 import Error from './Error';
+import AspectGraph from './AspectGraph';
+import './Movie.css';
 
 const Movie = () => {
   const [movieData, setMovieData] = useState(null);
@@ -13,33 +15,6 @@ const Movie = () => {
     const fetchMovieData = async () => {
       try {
         let processedData;
-
-        /*
-        // MOCK DATA FOR LOCAL TESTING - Uncomment this block and comment the API code below to test locally and vice versa
-        const startTime = Date.now();
-        const minimumLoadingTime = 1000;
-        
-        processedData = {
-          name: "Moonfall",
-          director: "Roland Emmerich",
-          year: "2022",
-          genres: ["Sci-Fi", "Adventure", "Action"],
-          backgroundImage: "https://m.media-amazon.com/images/M/MV5BZjk0OWZiN2ItNmQ2YS00NTJmLTg0MjItNzM4NzBkMWM1ZTRlXkEyXkFqcGdeQXVyMjMxOTE0ODA@._V1_.jpg",
-          synopsis: "A space crew travels to the moon after it's struck by an asteroid and is sent on a collision course with Earth.",
-          review: "This is the worst movie ever made by mankind. It's so bad that it's good. You have to see it to believe it."
-        };
-        
-        // Simulate API call time
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // For mock data only: ensure minimum loading time
-        const elapsedTime = Date.now() - startTime;
-        if (elapsedTime < minimumLoadingTime) {
-          const remainingTime = minimumLoadingTime - elapsedTime;
-          await new Promise(resolve => setTimeout(resolve, remainingTime));
-        }
-
-        */
 
         const response = await fetch('https://your-api-endpoint.com/movie/123');
         if (!response.ok) {
@@ -56,6 +31,7 @@ const Movie = () => {
           backgroundImage: data.poster_url,
           synopsis: data.overview,
           review: data.critic_review || 'No review available',
+          aspects: data.aspects || {},
         };
 
         // Update state with fetched data
@@ -79,54 +55,32 @@ const Movie = () => {
     return <Error />;
   }
 
+  // No need for separate aspect data as it's now included in movieData
+
   return (
-    <div
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        backgroundColor: '#000',
-        color: '#fff',
-      }}
-    >
-      {/* Background Image with dark overlay */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundImage: `url(${movieData.backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: 1,
-        }}
-      >
+    <div className="movie-main-container">
+      {/* Background Image */}
+      <div className="movie-background-container">
         <div
+          className="movie-background-image"
           style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backgroundImage: `url(${movieData.backgroundImage})`,
           }}
-        ></div>
+        />
       </div>
 
-      {/* Content container */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 2,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          padding: '0 2rem',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '72rem',
-            width: '100%',
-          }}
-        >
+      {/* Content */}
+      <div className="movie-content-container">
+        <div className="movie-info-wrapper">
+          {/* Movie information section */}
           <MovieInfo {...movieData} />
+
+          {/* Graph section with explicit class for spacing */}
+          {movieData.aspects && Object.keys(movieData.aspects).length > 0 && (
+            <div className="graph-container">
+              <AspectGraph data={movieData.aspects} />
+            </div>
+          )}
         </div>
       </div>
     </div>

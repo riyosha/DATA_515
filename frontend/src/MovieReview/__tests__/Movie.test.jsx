@@ -9,9 +9,7 @@ import Error from '../Error';
 // Mock the component dependencies
 vi.mock('../MovieInfo', () => {
   return {
-    default: vi.fn(() => (
-      <div data-testid="movie-info">MovieInfo Component</div>
-    )),
+    default: vi.fn(() => <div data-testid="movie">Movie Component</div>),
   };
 });
 
@@ -102,7 +100,7 @@ describe('Movie Component', () => {
 
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByTestId('movie-info')).toBeInTheDocument();
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
     });
 
     // Check that MovieInfo was called with the correctly processed data
@@ -167,7 +165,7 @@ describe('Movie Component', () => {
 
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByTestId('movie-info')).toBeInTheDocument();
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
     });
 
     // Check that MovieInfo handles missing data gracefully
