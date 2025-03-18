@@ -15,6 +15,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/movie" element={<Movie />} />
         <Route path="/roast" element={<Roast />} />
         <Route path="/loading" element={<Video />} />
+        <Route path="/roast" element={<Roast />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
