@@ -21,4 +21,4 @@ EXPOSE 5515
 ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "letterboxd"]
 
 # Command to run the application
-CMD ["python", "src/main.py"]
+CMD ["python", "src/app.py"]

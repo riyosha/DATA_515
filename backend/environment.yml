@@ -24,5 +24,7 @@ dependencies:
   - pip:
       - coverage
       - flask 
+      - flask-cors
       - google-generativeai
       - unittest2
+      - dotenv

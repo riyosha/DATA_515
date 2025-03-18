@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import MovieInfo from './MovieInfo';
 import Video from './Video';
 import Error from './Error';
@@ -9,29 +10,46 @@ const Movie = () => {
   const [movieData, setMovieData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     // Function to fetch data
     const fetchMovieData = async () => {
       try {
-        let processedData;
+        // Get the searchQuery from the location state (passed from the previous page)
+        const searchQuery = location.state?.searchQuery;
 
-        const response = await fetch('https://your-api-endpoint.com/movie/123');
+        const response = await fetch('/api/movie_details', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ film_url: searchQuery }),
+        });
+
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
+
         const data = await response.json();
 
-        // Process API data into the format your component expects
-        processedData = {
-          name: data.title,
-          director: data.director,
-          year: data.release_year,
-          genres: data.genres || [],
-          backgroundImage: data.poster_url,
-          synopsis: data.overview,
-          review: data.critic_review || 'No review available',
-          aspects: data.aspects || {},
+        // Process API data
+        const processedData = {
+          name: data.movie_details.movie_name,
+          director: data.movie_details.director,
+          year: data.movie_details.year,
+          genres: data.movie_details.genres
+            ? data.movie_details.genres
+                .split(',')
+                .map((genre) => genre.trim())
+                .filter((genre) => genre)
+                .slice(0, 5)
+            : [],
+          backgroundImage: data.movie_details.backdrop_image_url,
+          synopsis: data.movie_details.synopsis,
+          // Add other fields as needed
+          review: data.summary || 'No review available',
+          // aspects: data.aspects || null,
         };
 
         // Update state with fetched data
@@ -45,7 +63,7 @@ const Movie = () => {
     };
 
     fetchMovieData();
-  }, []);
+  }, [location.state]);
 
   if (loading) {
     return <Video videoPath="/videos/go-to-the-lobby.mp4" />;
@@ -69,10 +87,25 @@ const Movie = () => {
         />
       </div>
 
-      {/* Content */}
-      <div className="movie-content-container">
-        <div className="movie-info-wrapper">
-          {/* Movie information section */}
+      {/* Content container */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '100vh',
+          padding: '0 2rem',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '72rem',
+            width: '100%',
+          }}
+        >
+          console.log(movieData);
           <MovieInfo {...movieData} />
 
           {/* Graph section with explicit class for spacing */}

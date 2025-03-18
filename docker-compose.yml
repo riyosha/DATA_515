@@ -8,9 +8,10 @@ services:
       - "5515:5515"
     environment:
       - PYTHONUNBUFFERED=1
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
     env_file:
-      - .env
+      - ./backend/.env
+    networks:
+      - app-network
 
   frontend:
     build: ./frontend
@@ -21,3 +22,9 @@ services:
     tty: true
     depends_on:
       - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
