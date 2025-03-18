@@ -47,9 +47,8 @@ const Movie = () => {
             : [],
           backgroundImage: data.movie_details.backdrop_image_url,
           synopsis: data.movie_details.synopsis,
-          // Add other fields as needed
           review: data.summary || 'No review available',
-          // aspects: data.aspects || null,
+          aspects: data.aspects || [],
         };
 
         // Update state with fetched data
@@ -66,14 +65,12 @@ const Movie = () => {
   }, [location.state]);
 
   if (loading) {
-    return <Video videoPath="/videos/go-to-the-lobby.mp4" />;
+    return <Video />;
   }
 
   if (error) {
     return <Error />;
   }
-
-  // No need for separate aspect data as it's now included in movieData
 
   return (
     <div className="movie-main-container">
@@ -105,11 +102,10 @@ const Movie = () => {
             width: '100%',
           }}
         >
-          console.log(movieData);
           <MovieInfo {...movieData} />
 
           {/* Graph section with explicit class for spacing */}
-          {movieData.aspects && Object.keys(movieData.aspects).length > 0 && (
+          {movieData.aspects && movieData.aspects.length > 0 && (
             <div className="graph-container">
               <AspectGraph data={movieData.aspects} />
             </div>

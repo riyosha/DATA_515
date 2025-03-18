@@ -8,29 +8,27 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import PropTypes from 'prop-types';
 
 const AspectGraph = ({ data }) => {
-  // Ensure data is an object, even if null or undefined is passed
-  const safeData = data || {};
+  // Ensure data is an array, even if null or undefined is passed
+  const safeData = Array.isArray(data) ? data : [];
 
-  // Transform the data into the format required by Recharts
+  // Transform the array data into the format required by Recharts
   const transformData = () => {
-    return Object.entries(safeData).map(([aspect, values]) => ({
+    return safeData.map(([aspect, positive, negative]) => ({
       aspect,
-      value1: values[0],
-      value2: values[1],
+      value1: positive,
+      value2: negative,
     }));
   };
 
   // Get the maximum value to set the domain of the YAxis
   const getMaxValue = () => {
     let max = 0;
-    Object.values(safeData).forEach((values) => {
-      values.forEach((value) => {
-        if (value > max) {
-          max = value;
-        }
-      });
+    safeData.forEach(([, positive, negative]) => {
+      if (positive > max) max = positive;
+      if (negative > max) max = negative;
     });
     // Add some padding to the max value
     return Math.ceil(max * 1.1);
@@ -95,6 +93,16 @@ const AspectGraph = ({ data }) => {
       </div>
     </div>
   );
+};
+
+// Add prop types validation
+AspectGraph.propTypes = {
+  data: PropTypes.array,
+};
+
+// Add default props
+AspectGraph.defaultProps = {
+  data: [],
 };
 
 export default AspectGraph;
