@@ -74,24 +74,31 @@ class LetterboxdRoastAnalyzer:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel("gemini-1.5-pro")
 
-        prompt = (
-            "\nYou are a ruthlessly funny film critic. Based solely on the following "
-            "user reviews and statistics, generate a savage, witty, and brutally honest "
-            "roast that skewers the user's cinematic taste and habits. Use humor and sharp "
-            "insights, but avoid overly offensive language.\n\n"
-            f"{user_data}\n\n"
-            "Additionally, for each movie, compute the difference between the user's rating "
-            "and the movie's average rating. Let:\n  - guilty_pleasure_movie = maximum "
-            "difference,\n  - unpopular_opinion = minimum difference.\n\n"
-            "Then, incorporate these observations:\n  - If guilty_pleasure_movie is less "
-            "than 2 and unpopular_opinion is greater than -2, add: "
-            "\"You are basic and have no original thoughts.\"\n  - If guilty_pleasure_movie "
-            "is greater than or equal to 2, ask: \"Do you really like that movie?\"\n  - If "
-            "unpopular_opinion is greater than -2, add: "
-            "\"You are alone on this one, everyone likes this movie, bro.\"\n\n"
-            "Ensure the roast is concise and impactful. Keep it strictly under 500 words in "
-            "5-7 steps."
-        )
+        prompt = f""" You're a ruthless, wildly funny film critic, and your job is to
+                      obliterate this user's Letterboxd taste in a way that's fast, savage,
+                      and impossible to ignore. No lists, no formatting—just a single,
+                      flowing paragraph that roasts them so brutally they’ll question
+                      every movie they've ever watched.
+
+                      Here are their reviews , ratings and their stats:{user_data}
+
+                      Now, open with a devastating one-liner about their taste, then
+                      tear apart their worst ratings—mock the classic they unfairly
+                      trashed or the embarrassing five-star they handed out. Drag their
+                      genre obsession—do they live in horror? Worship romcoms? Are they
+                      trapped in an endless Marvel marathon? Make fun of their binge 
+                      habits—if their most-watched actor or director is absurdly specific
+                      or tragic, call it out. If they have a weirdly high watch count for a
+                      single film, expose them. Roast their review style—whether they write
+                      pretentious essays, cryptic one-word takes, or full-on Wikipedia summaries.
+                      End by recommending a movie so painfully accurate it stings without using **,
+                      the kind of film that perfectly sums up their questionable taste.
+
+                      Absolutely no bold text and dont use ** ** ever, no bullet points, no structured
+                      formatting—just a single, natural-flowing paragraph like a real, brutal, hilarious
+                      film critique. Do not use Markdown, asterisks, or any formatting characters—output
+                      must be plain text only.
+                  """
 
         response = model.generate_content(prompt)
         roast = response.text
