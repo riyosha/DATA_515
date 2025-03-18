@@ -5,6 +5,7 @@ import './index.css';
 import Landing from './Landing.jsx';
 import Movie from './MovieReview/Movie.jsx';
 import Roast from './Roast/Roast.jsx';
+import Video from './MovieReview/Video.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Landing />} />
         <Route path="/movie" element={<Movie />} />
         <Route path="/roast" element={<Roast />} />
+        <Route path="/loading" element={<Video />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

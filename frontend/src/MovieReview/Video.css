@@ -1,0 +1,87 @@
+.video-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.loading-message-container {
+  padding: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+}
+
+.loading-message {
+  font-family: 'Arial', sans-serif;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  color: #ffd700; /* Gold color for movie theater vibe */
+  padding: 1rem 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  max-width: 80%;
+  text-align: center;
+}
+
+.video-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: calc(
+    100vh - 150px
+  ); /* Adjust based on the height of your message */
+}
+
+.flashing {
+  animation: flash 2s infinite;
+}
+
+@keyframes flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.play-button {
+  position: absolute;
+  background-color: rgba(255, 0, 0, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+  color: white;
+  z-index: 5;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 0, 0, 1);
+}
+
+.play-button svg {
+  margin-left: 5px; /* Slight adjustment for the play icon */
+}

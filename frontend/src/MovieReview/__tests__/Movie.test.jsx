@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Movie from '../Movie';
 import MovieInfo from '../MovieInfo';
+import AspectGraph from '../AspectGraph';
 import Error from '../Error';
 import { useLocation } from 'react-router-dom';
 
@@ -14,17 +15,23 @@ vi.mock('react-router-dom', () => ({
 // Mock the component dependencies
 vi.mock('../MovieInfo', () => {
   return {
-    default: vi.fn(() => (
-      <div data-testid="movie-info">MovieInfo Component</div>
+    default: vi.fn(() => <div data-testid="movie">Movie Component</div>),
+  };
+});
+
+vi.mock('../AspectGraph', () => {
+  return {
+    default: vi.fn(({ data }) => (
+      <div data-testid="aspect-graph">
+        Aspect Graph Component: {JSON.stringify(data)}
+      </div>
     )),
   };
 });
 
 vi.mock('../Video', () => {
   return {
-    default: vi.fn(({ videoPath }) => (
-      <div data-testid="video">{videoPath}</div>
-    )),
+    default: vi.fn(() => <div data-testid="video">Loading Video</div>),
   };
 });
 
@@ -82,7 +89,6 @@ describe('Movie Component', () => {
 
     // Should show the loading video initially
     expect(screen.getByTestId('video')).toBeInTheDocument();
-    expect(screen.getByText('/videos/go-to-the-lobby.mp4')).toBeInTheDocument();
 
     // Wait for loading to complete and verify it's gone
     await waitFor(
@@ -118,7 +124,7 @@ describe('Movie Component', () => {
 
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByTestId('movie-info')).toBeInTheDocument();
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
     });
 
     // Check that MovieInfo was called with the correctly processed data
@@ -138,6 +144,43 @@ describe('Movie Component', () => {
     expect(firstCall.backgroundImage).toBe('test-image.jpg');
     expect(firstCall.synopsis).toBe('Test synopsis');
     expect(firstCall.review).toBe('Test review');
+
+    // Check that AspectGraph is rendered with the correct data
+    expect(AspectGraph).toHaveBeenCalled();
+    expect(AspectGraph.mock.calls[0][0].data).toEqual(mockMovieData.aspects);
+    expect(screen.getByTestId('aspect-graph')).toBeInTheDocument();
+  });
+
+  it('does not render AspectGraph when aspects data is empty', async () => {
+    // Mock successful API response with no aspects data
+    const mockMovieData = {
+      movie_details: {
+        movie_name: 'Test Movie',
+        director: 'Test Director',
+        year: '2023',
+        genres: 'Action, Drama',
+        backdrop_image_url: 'test-image.jpg',
+        synopsis: 'Test synopsis',
+      },
+      summary: 'Test review',
+      aspects: [], // Empty aspects array
+    };
+
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockMovieData),
+    });
+
+    render(<Movie />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
+    });
+
+    // AspectGraph should not be rendered
+    expect(screen.queryByTestId('aspect-graph')).not.toBeInTheDocument();
+    expect(AspectGraph).not.toHaveBeenCalled();
   });
 
   it('shows error component when fetch fails', async () => {
@@ -190,22 +233,23 @@ describe('Movie Component', () => {
 
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByTestId('movie-info')).toBeInTheDocument();
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
     });
 
     // Check that MovieInfo handles missing data gracefully
-    expect(MovieInfo).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: 'Minimal Movie',
-        director: 'Some Director',
-        year: '2022',
-        genres: [], // Should default to empty array for missing genres
-        review: 'No review available', // Should use default message
-        backgroundImage: undefined, // Should default to undefined
-        synopsis: undefined, // Should default to undefined
-      }),
-      undefined
-    );
+    expect(MovieInfo).toHaveBeenCalled();
+    const movieInfoProps = MovieInfo.mock.calls[0][0];
+    expect(movieInfoProps.name).toBe('Minimal Movie');
+    expect(movieInfoProps.director).toBe('Some Director');
+    expect(movieInfoProps.year).toBe('2022');
+    expect(movieInfoProps.genres).toEqual([]);
+    expect(movieInfoProps.review).toBe('No review available');
+    expect(movieInfoProps.backgroundImage).toBeUndefined();
+    expect(movieInfoProps.synopsis).toBeUndefined();
+    expect(movieInfoProps.aspects).toEqual([]);
+
+    // AspectGraph should not be rendered with empty aspects
+    expect(screen.queryByTestId('aspect-graph')).not.toBeInTheDocument();
   });
 
   it('handles empty genres string correctly', async () => {
@@ -230,7 +274,7 @@ describe('Movie Component', () => {
 
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByTestId('movie-info')).toBeInTheDocument();
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
     });
 
     // Check that MovieInfo receives empty array for genres
@@ -261,7 +305,7 @@ describe('Movie Component', () => {
 
     // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByTestId('movie-info')).toBeInTheDocument();
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
     });
 
     // Check that MovieInfo receives all 5 genres

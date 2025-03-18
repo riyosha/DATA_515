@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import MovieInfo from './MovieInfo';
 import Video from './Video';
 import Error from './Error';
+import AspectGraph from './AspectGraph';
+import './Movie.css';
 
 const Movie = () => {
   const [movieData, setMovieData] = useState(null);
@@ -45,9 +47,8 @@ const Movie = () => {
             : [],
           backgroundImage: data.movie_details.backdrop_image_url,
           synopsis: data.movie_details.synopsis,
-          // Add other fields as needed
           review: data.summary || 'No review available',
-          // aspects: data.aspects || null,
+          aspects: data.aspects || [],
         };
 
         // Update state with fetched data
@@ -64,7 +65,7 @@ const Movie = () => {
   }, [location.state]);
 
   if (loading) {
-    return <Video videoPath="/videos/go-to-the-lobby.mp4" />;
+    return <Video />;
   }
 
   if (error) {
@@ -72,32 +73,15 @@ const Movie = () => {
   }
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        backgroundColor: '#000',
-        color: '#fff',
-      }}
-    >
-      {/* Background Image with dark overlay */}
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundImage: `url(${movieData.backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: 1,
-        }}
-      >
+    <div className="movie-main-container">
+      {/* Background Image */}
+      <div className="movie-background-container">
         <div
+          className="movie-background-image"
           style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backgroundImage: `url(${movieData.backgroundImage})`,
           }}
-        ></div>
+        />
       </div>
 
       {/* Content container */}
@@ -118,8 +102,14 @@ const Movie = () => {
             width: '100%',
           }}
         >
-          console.log(movieData);
           <MovieInfo {...movieData} />
+
+          {/* Graph section with explicit class for spacing */}
+          {movieData.aspects && movieData.aspects.length > 0 && (
+            <div className="graph-container">
+              <AspectGraph data={movieData.aspects} />
+            </div>
+          )}
         </div>
       </div>
     </div>
