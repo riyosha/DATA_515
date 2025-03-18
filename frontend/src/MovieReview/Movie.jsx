@@ -118,6 +118,7 @@ const Movie = () => {
             width: '100%',
           }}
         >
+          console.log(movieData);
           <MovieInfo {...movieData} />
         </div>
       </div>
