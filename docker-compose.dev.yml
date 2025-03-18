@@ -6,10 +6,12 @@ services:
       - ./backend:/app
     environment:
       - FLASK_DEBUG=1
-      - FLASK_APP=src/main.py
+      - FLASK_APP=src/app.py
       - PYTHONUNBUFFERED=1
     # Use the command that starts your Flask app in development mode
     # Adjust this if your backend has a different startup command
+    env_file:
+      - ./backend/.env
     command: conda run -n letterboxd python -m flask run --host=0.0.0.0 --port=5515 --reload
 
   frontend:

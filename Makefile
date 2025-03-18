@@ -1,4 +1,4 @@
-.PHONY: up down build rebuild logs ps help test-frontend test-backend lint-frontend lint-backend shell-frontend shell-backend test lint clean dev init
+.PHONY: up down build rebuild logs ps help test test-frontend test-backend lint-frontend lint-backend lint shell-frontend shell-backend clean dev init setup-env
 
 # Help command
 help:
@@ -25,6 +25,7 @@ help:
 	@echo "clean              - Remove all containers, volumes, and images"
 	@echo "dev                - Start development mode with hot reloading"
 	@echo "init               - Initialize project (first-time setup)"
+	@echo "setup-env          - Create .env file from .env.template"
 
 # Docker Compose commands
 up:
@@ -88,6 +89,20 @@ coverage: coverage-backend coverage-frontend
 
 lint: lint-frontend lint-backend
 
+# Environment setup
+setup-env:
+	@if [ ! -f backend/.env ]; then \
+		if [ -f backend/.env.template ]; then \
+			cp backend/.env.template backend/.env; \
+			echo "Created backend/.env file from backend/.env.template. Please edit it with your actual API keys."; \
+		else \
+			echo "Error: backend/.env.template file not found!"; \
+			exit 1; \
+		fi \
+	else \
+		echo "backend/.env file already exists. Remove it first if you want to create a new one."; \
+	fi
+
 # Development mode (with hot reloading)
 dev:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
@@ -97,5 +112,5 @@ clean:
 	docker-compose down -v --rmi local
 
 # First-time setup
-init: build up
-	@echo "Project initialized successfully!"
+init: setup-env build up
+	@echo "Project initialized successfully! Don't forget to update your .env file with actual API keys."

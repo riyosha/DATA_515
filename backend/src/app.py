@@ -5,6 +5,7 @@ import os
 from dotenv import load_dotenv
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from src.helpers.scrapers import movie_details_scraper,scrape_reviews
 from src.helpers.letterboxd_analyzers import LetterboxdReviewAnalyzer
 from src.helpers.roast_generator import LetterboxdRoastAnalyzer
@@ -27,6 +28,8 @@ analyze = LetterboxdReviewAnalyzer()
 roaster = LetterboxdRoastAnalyzer()
 
 app = Flask(__name__)
+
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route('/movie_details', methods=['POST'])
 def scraping_movie_details():
@@ -82,4 +85,4 @@ def username_roast():
         return jsonify({'error': f'Request failed: {str(re)}'}), 500
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=5515, debug=True)
