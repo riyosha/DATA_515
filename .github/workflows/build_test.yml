@@ -38,13 +38,15 @@ jobs:
       - name: Build backend Docker image
         run: docker build -t backend-app ./backend
 
+      # Inject GEMINI API Keys as environment variables
       - name: Inject GEMINI API Keys
-        run: echo "GEMINI_API_KEY_RIO1=${{ secrets.GEMINI_API_KEY_RIO1 }}" >> $GITHUB_ENV
-        run: echo "GEMINI_API_KEY_RIO2=${{ secrets.GEMINI_API_KEY_RIO2 }}" >> $GITHUB_ENV
-        run: echo "GEMINI_API_KEY_RIO3=${{ secrets.GEMINI_API_KEY_RIO3 }}" >> $GITHUB_ENV
-        run: echo "GEMINI_API_KEY_SAI1=${{ secrets.GEMINI_API_KEY_SAI1 }}" >> $GITHUB_ENV
-        run: echo "GEMINI_API_KEY_SAI2=${{ secrets.GEMINI_API_KEY_SAI2 }}" >> $GITHUB_ENV
-        run: echo "GEMINI_API_KEY_SAI3=${{ secrets.GEMINI_API_KEY_SAI3 }}" >> $GITHUB_ENV
+        run: |
+          echo "GEMINI_API_KEY_RIO1=${{ secrets.GEMINI_API_KEY_RIO1 }}" >> $GITHUB_ENV
+          echo "GEMINI_API_KEY_RIO2=${{ secrets.GEMINI_API_KEY_RIO2 }}" >> $GITHUB_ENV
+          echo "GEMINI_API_KEY_RIO3=${{ secrets.GEMINI_API_KEY_RIO3 }}" >> $GITHUB_ENV
+          echo "GEMINI_API_KEY_SAI1=${{ secrets.GEMINI_API_KEY_SAI1 }}" >> $GITHUB_ENV
+          echo "GEMINI_API_KEY_SAI2=${{ secrets.GEMINI_API_KEY_SAI2 }}" >> $GITHUB_ENV
+          echo "GEMINI_API_KEY_SAI3=${{ secrets.GEMINI_API_KEY_SAI3 }}" >> $GITHUB_ENV
 
       # Run pylint on backend code
       - name: Run pylint on backend
