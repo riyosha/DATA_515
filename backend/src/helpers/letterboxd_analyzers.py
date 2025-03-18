@@ -78,7 +78,7 @@ class LetterboxdReviewAnalyzer:
             + ": "
             + element["review_text"]
             for element in reviews_list
-            if "review_text" in element and "rating" in element
+            if "review_text" in element and "rating" in element and "movie_name" in element
         )
 
         return reviews_text
