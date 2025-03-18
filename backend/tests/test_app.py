@@ -119,20 +119,19 @@ class TestFlaskApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn("error", data)
 
-    @patch("src.helpers.scrapers_roast.scrape_user_reviews")
-    @patch("src.helpers.scrapers_roast.scrape_user_stats")
-    @patch("src.helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
-    def test_username_roast_request_exception(
-        self, mock_get_results, _mock_scrape_user_stats, mock_scrape_user_reviews
+@patch("src.helpers.scrapers_roast.scrape_user_reviews")
+@patch("src.helpers.scrapers_roast.scrape_user_stats")
+@patch("src.helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
+def test_username_roast_request_exception(
+    self, mock_get_results, _mock_scrape_user_stats, mock_scrape_user_reviews
     ):
-        """Test username roast when an external request fails."""
-        mock_scrape_user_reviews.side_effect = requests.exceptions.RequestException("Request failed")
-        mock_get_results.return_value = "Mock roast response"
-        response = self.client.post("/roast", json={"username": "test_user"})
-        self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
-
+    """Test username roast when an external request fails."""
+    mock_scrape_user_reviews.side_effect = requests.exceptions.RequestException("Request failed")
+    mock_get_results.return_value = "Mock roast response"
+    response = self.client.post("/roast", json={"username": "test_user"})
+    self.assertEqual(response.status_code, 400)
+    data = response.get_json()
+    self.assertIn("error", data)
 
 if __name__ == "__main__":
     unittest.main()

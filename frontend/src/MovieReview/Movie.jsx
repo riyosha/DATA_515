@@ -9,13 +9,13 @@ const Movie = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const location = useLocation();
-  
+
   useEffect(() => {
     // Function to fetch data
     const fetchMovieData = async () => {
       try {
         // Get the searchQuery from the location state (passed from the previous page)
-        const searchQuery = location.state?.searchQuery;        
+        const searchQuery = location.state?.searchQuery;
 
         const response = await fetch('/api/movie_details', {
           method: 'POST',
@@ -24,24 +24,25 @@ const Movie = () => {
           },
           body: JSON.stringify({ film_url: searchQuery }),
         });
-        
+
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         // Process API data
         const processedData = {
           name: data.movie_details.movie_name,
           director: data.movie_details.director,
           year: data.movie_details.year,
-          genres: (data.movie_details.genres ? 
-            data.movie_details.genres.split(',')
-              .map(genre => genre.trim())
-              .filter(genre => genre)
-              .slice(0, 5) : 
-            []),
+          genres: data.movie_details.genres
+            ? data.movie_details.genres
+                .split(',')
+                .map((genre) => genre.trim())
+                .filter((genre) => genre)
+                .slice(0, 5)
+            : [],
           backgroundImage: data.movie_details.backdrop_image_url,
           synopsis: data.movie_details.synopsis,
           // Add other fields as needed
@@ -54,7 +55,7 @@ const Movie = () => {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching movie data:', err);
-        setError(`Failed to fetch movie data: ${err.message}`);
+        setError('Failed to fetch movie data');
         setLoading(false);
       }
     };
@@ -67,7 +68,7 @@ const Movie = () => {
   }
 
   if (error) {
-    return <Error message={error} />;
+    return <Error />;
   }
 
   return (
