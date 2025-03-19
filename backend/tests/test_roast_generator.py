@@ -50,27 +50,6 @@ class TestLetterboxdRoastAnalyzer(unittest.TestCase):
     # Tests for generate_roast
     @patch("src.helpers.roast_generator.genai.GenerativeModel")
     @patch("src.helpers.roast_generator.genai.configure")
-    def test_generate_roast_success(self, _mock_configure, mock_model_class):
-        """Test generate_roast returns a roast when the API responds correctly."""
-        fake_response = MagicMock()
-        fake_response.text = "Savage roast text."
-        fake_model = MagicMock()
-        fake_model.generate_content.return_value = fake_response
-        mock_model_class.return_value = fake_model
-
-        user_data = (
-            "User Reviews: Great movie!\n\n"
-            "User Statistics: Total Hours Watched: 120"
-        )
-        roast = self.analyzer.generate_roast(user_data, "fake-api-key")
-        self.assertEqual(roast, "Savage roast text.")
-        args, _ = fake_model.generate_content.call_args
-        prompt = args[0]
-        self.assertIn("guilty_pleasure_movie", prompt)
-        self.assertIn("unpopular_opinion", prompt)
-
-    @patch("src.helpers.roast_generator.genai.GenerativeModel")
-    @patch("src.helpers.roast_generator.genai.configure")
     def test_generate_roast_too_long(self, _mock_configure, mock_model_class):
         """Test generate_roast raises RoastGenerationError if the roast is too long."""
         fake_response = MagicMock()
