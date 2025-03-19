@@ -16,7 +16,7 @@ To achieve these goals, different **Generative AI, NLP, and Web Scraping** techn
 Since **Letterboxd does not provide an official API**, web scraping is used to extract movie reviews and user profile data for analysis.  
 
 ### **1. BeautifulSoup for Movie Reviews (Summarization Feature)**  
-To generate meaningful **summaries** of a movie’s **top reviews**, 100 of the most popular Letterboxd reviews are scraped from the movie's page.  
+To generate meaningful **summaries** of a movie’s **top reviews**, 300 of the most popular Letterboxd reviews are scraped from the movie's page.  
 
 - **Technology Used:** `BeautifulSoup` (Python library for HTML parsing).  
 - **Scraped Data:**  
