@@ -3,11 +3,6 @@
 ![GitHub Actions Workflow](https://github.com/riyosha/DATA_515/actions/workflows/build_test.yml/badge.svg)
 ![Coverage Status](https://coveralls.io/repos/github/riyosha/DATA_515/badge.svg)
 
-# Letterboxd Movie Analyzer & Roast Generator
-
-![Build-Test Workflow](https://github.com/your-repo/actions/workflows/build_test.yml/badge.svg)  
-![Coverage Status](https://coveralls.io/repos/github/your-repo/badge.svg)  
-
 ## Introduction  
 
 The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool designed to help users quickly evaluate movies based on **Letterboxd reviews** and generate **personalized roasts** of their Letterboxd profile data.  
@@ -116,7 +111,7 @@ To set up the project, use the provided `Makefile` commands for a streamlined in
 To clone this repository, run:  
 
 ```bash
- git clone https://github.com/riyosha/DATA_515.git
+ git clone https://github.com/riyosha/letterboxd-review-analyzer.git
 ```
 
 Ensure **Git** is installed before running this command.  
