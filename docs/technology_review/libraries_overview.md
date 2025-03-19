@@ -21,7 +21,7 @@ To generate meaningful **summaries** of a movie’s **top reviews**, 300 of the 
 - **Technology Used:** `BeautifulSoup` (Python library for HTML parsing).  
 - **Scraped Data:**  
   - **Movie title, director, year, genres, and synopsis**  
-  - **Top 100 user reviews** (review text, user rating)  
+  - **Top 300 user reviews** (review text, user rating)  
 
 - **How the Data is Used:**  
   - The **scraped reviews** are passed to **Gemini 1.5 Pro** for **summarization** and **aspect-based sentiment analysis**.  
