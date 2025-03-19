@@ -103,13 +103,15 @@ class LetterboxdReviewAnalyzer:
                         You are summarizing Letterboxd reviews.  Given a collection of reviews, create a short, 
                         witty, and humorous paragraph that captures the overall sentiment and tone of the reviewers. 
                         Focus on the reviewers' reactions to the film itself, not just the plot.  
-                        Write in a style that mimics the reviewers' own voices, but avoid overly conversational or informal language.
+                        Write in a style that mimics the reviewers' own tone, but avoid overly conversational or informal language.
                         The goal is to give a potential viewer a sense of what it's like to experience the film based on the reviews - 
                         it should read like an actual Letterboxd reviewer is writing the review.
                         Avoid cheesy, overused language (avoid phrases like prepare to, rollercoaster etc.)- 
                         write in a manner similar to the reviews provided. Keep the summary *stricttly* under 200 words.
                         - Use only the reviews provided
                         - you cannot access real time information about the movies
+                        - avoid formatting like asterisks
+                        - avoid too many pop cultural references, not everyone will understand them
 
                         Reviews:
                         {reviews}
