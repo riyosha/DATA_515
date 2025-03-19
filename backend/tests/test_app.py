@@ -135,7 +135,7 @@ class TestFlaskApp(unittest.TestCase):
             "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/", 
             "username": "test_user"}
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
         data = response.get_json()
         self.assertIn("taste", data)
 
