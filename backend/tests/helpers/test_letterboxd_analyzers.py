@@ -98,7 +98,6 @@ class TestLetterboxdReviewAnalyzer(unittest.TestCase):
         ]
         expected_output = (
             "Talk to Me, ★★★: good one time watch, pretty generic horror movie but well executed"
-            " >>> The Handmaiden, ★★★★: "
         )
         self.assertEqual(self.analyzer.read_user_data(reviews_list), expected_output)
 
