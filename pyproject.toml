@@ -36,4 +36,4 @@ dependencies = {file = ["requirements.txt"]}
 
 # Where can someone find out more about your project?
 [project.urls]
-Homepage = "xyz"
+Homepage = "https://github.com/riyosha/letterboxd-review-analyzer"
