@@ -30,14 +30,17 @@ TBD (if hosted)
 
 ---
 
-## **Table of Contents**  
+## **Table of Contents** 
 
+- [Dependencies](#dependencies) 
 - [Introduction](#introduction)  
 - [User Profiles](#user-profiles)  
 - [Tasks of Interest](#tasks-of-interest)  
 - [Repository Structure](#repository-structure)  
-- [Installation](#installation)  
-- [Environment](#environment)  
+- [Installation](#installation)
+- [Generating Gemini API Keys](#generating-api-keys)
+- [Running the Project](#running-the-project) 
+- [Environment, Tests and Coverage](#environment)  
 - [Data](#data)  
 - [Application](#application)  
 - [Examples](#examples)  
@@ -95,70 +98,63 @@ TBD (if hosted)
 ```
 
 ---
+## **Dependencies**
 
-## **Installation**
+Please have the latest versions of Docker and Git installed on your local system.
 
-For a list of all available commands, run:
+Docker: https://www.docker.com/
+Git: https://git-scm.com/downloads
 
-```bash
-make help
-```
-
-This will display a list of preconfigured Makefile commands for managing the project.
-
-To set up the project, use the provided `Makefile` commands for a streamlined installation process.  
+## **Installation** 
 
 To clone this repository, run:  
 
 ```bash
  git clone https://github.com/riyosha/letterboxd-review-analyzer.git
 ```
+---
 
-Ensure **Git** is installed before running this command.  
+For a list of all available make commands, run:
+
+```bash
+make help
+```
+This will display a list of preconfigured `Makefile` commands for managing the project.
+For the first time initialization of the project, run:
+```bash
+make init
+```
+---
+## **Generating API Keys**
+
+Run:
+```bash
+make setup-env
+```
+to setup backend/.env template file for your API keys.
+
+Please follow this link to generate 6 Gemini API keys: https://ai.google.dev/gemini-api/docs/api-key 
+
+Update backend/.env with your actual API keys.
+
+---
+## **Running the Project**  
+
+Run these commands in order - 
+
+```bash
+open -a Docker
+make build
+make dev
+```
+
+Use the frontend link to launch the website!
 
 ---
 
-## **Environment**  
+## **Environment, Tests and Coverage**  
 
-### **Setting Up Python Environment**
-
-To set up the backend environment, run:  
-
-```bash
-make setup-backend  
-```
-
-To deactivate the environment, run:
-
-```bash
-make deactivate
-```
-
-To remove the environment, run:
-
-```bash
-make clean-backend
-```
-
----
-
-## **Running the Backend**
-
-To start the backend, use:  
-
-```bash
-make run-backend  
-```
-
----
-
-## **Running the Frontend**
-
-To start the frontend, use:  
-
-```bash
-make run-frontend  
-```
+To individually setup environments and run tests for frontend and backend, please refer to commands listed by `make help`.
 
 ---
 
@@ -188,21 +184,6 @@ The web application is built with **Flask (backend) and React (frontend)**.
 
 ### **Running Tests**
 
-Use the following commands to run tests.  
-
-### **Backend Tests**
-
-To run backend tests, use:  
-```bash
-make test-backend  
-```
-
-### **Frontend Tests**
-
-To run frontend tests, use:  
-```bash
-make test-frontend  
-```
 
 ---
 
