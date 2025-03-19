@@ -1,4 +1,4 @@
-# Letterboxd Movie Analyzer & Roast Generator
+# Letterboxd Movie Review Analyzer & Roast Generator
 
 ![GitHub Actions Workflow](https://github.com/riyosha/DATA_515/actions/workflows/build_test.yml/badge.svg)
 ![Coverage Status](https://coveralls.io/repos/github/riyosha/DATA_515/badge.svg)
