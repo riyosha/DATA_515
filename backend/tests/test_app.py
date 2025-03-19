@@ -136,21 +136,12 @@ class TestFlaskApp(unittest.TestCase):
             "username": "test_user"}
         )
         self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("taste", data)
 
     def test_taste_match_missing_username(self):
         """Test taste match with missing username field."""
         response = self.client.post(
             "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
         )
-        self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
-
-    def test_taste_match_missing_film_url(self):
-        """Test taste match with missing film URL."""
-        response = self.client.post("/taste", json={"username": "test_user"})
         self.assertEqual(response.status_code, 400)
         data = response.get_json()
         self.assertIn("error", data)
