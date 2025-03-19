@@ -3,6 +3,11 @@
 ![GitHub Actions Workflow](https://github.com/riyosha/DATA_515/actions/workflows/build_test.yml/badge.svg)
 ![Coverage Status](https://coveralls.io/repos/github/riyosha/DATA_515/badge.svg)
 
+# Letterboxd Movie Analyzer & Roast Generator
+
+![Build-Test Workflow](https://github.com/your-repo/actions/workflows/build_test.yml/badge.svg)  
+![Coverage Status](https://coveralls.io/repos/github/your-repo/badge.svg)  
+
 ## Introduction  
 
 The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool designed to help users quickly evaluate movies based on **Letterboxd reviews** and generate **personalized roasts** of their Letterboxd profile data.  
@@ -96,7 +101,17 @@ TBD (if hosted)
 
 ---
 
-## **Installation**  
+## **Installation**
+
+For a list of all available commands, run:
+
+```bash
+make help
+```
+
+This will display a list of preconfigured Makefile commands for managing the project.
+
+To set up the project, use the provided `Makefile` commands for a streamlined installation process.  
 
 To clone this repository, run:  
 
@@ -110,43 +125,44 @@ Ensure **Git** is installed before running this command.
 
 ## **Environment**  
 
-### **Setting Up Python Environment**  
+### **Setting Up Python Environment**
+
+To set up the backend environment, run:  
 
 ```bash
-cd backend
-conda env create -f environment.yml
-conda activate letterboxd-env  
+make setup-backend  
 ```
 
-To deactivate the environment:  
+To deactivate the environment, run:
 
 ```bash
-conda deactivate  
+make deactivate
 ```
 
-To remove the environment:  
+To remove the environment, run:
 
 ```bash
-conda remove --name letterboxd-env --all  
-```
-
----
-
-## **Running the Backend**  
-
-```bash
-cd backend/src
-python main.py  
+make clean-backend
 ```
 
 ---
 
-## **Running the Frontend**  
+## **Running the Backend**
+
+To start the backend, use:  
 
 ```bash
-cd frontend
-npm install
-npm run dev  
+make run-backend  
+```
+
+---
+
+## **Running the Frontend**
+
+To start the frontend, use:  
+
+```bash
+make run-frontend  
 ```
 
 ---
@@ -175,18 +191,22 @@ This project **scrapes data live** from **Letterboxd** instead of relying on sta
 
 The web application is built with **Flask (backend) and React (frontend)**.  
 
-### **Running Tests**  
+### **Running Tests**
 
-#### **Backend Tests**  
+Use the following commands to run tests.  
+
+### **Backend Tests**
+
+To run backend tests, use:  
 ```bash
-cd backend/tests
-pytest  
+make test-backend  
 ```
 
-#### **Frontend Tests**  
+### **Frontend Tests**
+
+To run frontend tests, use:  
 ```bash
-cd frontend
-npm test  
+make test-frontend  
 ```
 
 ---
@@ -204,8 +224,3 @@ This project is a **fan-based tool** that scrapes publicly available information
 Use this tool responsibly and respect **Letterboxd's terms of service**.  
 
 ---
-
-### **Next Steps**  
-
-This README is **GitHub-friendly, properly structured, and fully aligned with your updated file structure**. Let me know if you need any further refinements.
-
