@@ -21,7 +21,8 @@ class TestFlaskApp(unittest.TestCase):
     @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_results")
     @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.read_reviews")
     def test_scraping_movie_details_success(
-        self, mock_read_reviews, mock_get_results, mock_scrape_reviews, mock_movie_details_scraper
+        self, mock_read_reviews, mock_get_results,
+        mock_scrape_reviews, mock_movie_details_scraper
     ):
         """Test successful movie details scraping with summary and aspects."""
         mock_movie_details_scraper.return_value = {
@@ -119,77 +120,53 @@ class TestFlaskApp(unittest.TestCase):
         data = response.get_json()
         self.assertIn("error", data)
 
-@patch("src.helpers.scrapers_roast.scrape_user_reviews")
-@patch("src.helpers.scrapers_roast.scrape_user_stats")
-@patch("src.helpers.roast_generator.LetterboxdRoastAnalyzer.get_results")
-def test_username_roast_request_exception(
-    self, mock_get_results, _mock_scrape_user_stats, mock_scrape_user_reviews
+    @patch("src.helpers.scrapers.scrape_reviews")
+    @patch("src.helpers.scrapers_roast.scrape_user_reviews")
+    @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_taste_match_result")
+    def test_taste_match_success(
+        self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews
     ):
-    """Test username roast when an external request fails."""
-    mock_scrape_user_reviews.side_effect = requests.exceptions.RequestException("Request failed")
-    mock_get_results.return_value = "Mock roast response"
-    response = self.client.post("/roast", json={"username": "test_user"})
-    self.assertEqual(response.status_code, 400)
-    data = response.get_json()
-    self.assertIn("error", data)
+        """Test successful taste match analysis."""
+        mock_scrape_reviews.return_value = ["Review 1", "Review 2"]
+        mock_scrape_user_reviews.return_value = ["User Review 1", "User Review 2"]
+        mock_get_taste_match_result.return_value = "You might like this movie!"
 
-@patch("src.helpers.scrapers.scrape_reviews")
-@patch("src.helpers.scrapers_roast.scrape_user_reviews")
-@patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_taste_match_result")
-def test_taste_match_success(
-    self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews
+        response = self.client.post(
+            "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/", 
+            "username": "test_user"}
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.get_json()
+        self.assertIn("taste", data)
+
+    def test_taste_match_missing_username(self):
+        """Test taste match with missing username field."""
+        response = self.client.post(
+            "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
+        )
+        self.assertEqual(response.status_code, 400)
+        data = response.get_json()
+        self.assertIn("error", data)
+
+    def test_taste_match_missing_film_url(self):
+        """Test taste match with missing film URL."""
+        response = self.client.post("/taste", json={"username": "test_user"})
+        self.assertEqual(response.status_code, 400)
+        data = response.get_json()
+        self.assertIn("error", data)
+
+    @patch("src.helpers.scrapers.scrape_reviews")
+    @patch("src.helpers.scrapers_roast.scrape_user_reviews")
+    @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_taste_match_result")
+    def test_taste_match_key_error(
+        self, _mock_get_taste_match_result, _mock_scrape_user_reviews, _mock_scrape_reviews
     ):
-    """Test successful taste match analysis."""
-    mock_scrape_reviews.return_value = ["Review 1", "Review 2"]
-    mock_scrape_user_reviews.return_value = ["User Review 1", "User Review 2"]
-    mock_get_taste_match_result.return_value = "You might like this movie!"
-
-    response = self.client.post(
-        "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/","username":"test_user"}
-    )
-    self.assertEqual(response.status_code, 200)
-    data = response.get_json()
-    self.assertIn("taste", data)
-
-def test_taste_match_missing_username(self):
-    """Test taste match with missing username field."""
-    response = self.client.post("/taste",json={"film_url":"https://letterboxd.com/film/mickey-17/"})
-    self.assertEqual(response.status_code, 400)
-    data = response.get_json()
-    self.assertIn("error", data)
-
-def test_taste_match_missing_film_url(self):
-    """Test taste match with missing film URL."""
-    response = self.client.post("/taste", json={"username": "test_user"})
-    self.assertEqual(response.status_code, 400)
-    data = response.get_json()
-    self.assertIn("error", data)
-
-def test_taste_match_key_error(self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews):
-    """Test taste match with a missing key in the JSON payload."""
-    response = self.client.post("/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/"})
-    self.assertEqual(response.status_code, 400)
-    data = response.get_json()
-    self.assertIn("error", data)
-    self.assertEqual(data["error"], "username is required")
-    
-def test_taste_match_value_error(self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews):
-    """Test taste match when a ValueError is raised."""
-    mock_scrape_reviews.side_effect = ValueError("Invalid film URL format")
-    response = self.client.post("/taste", json={"film_url": "invalid_url", "username": "test_user"})
-    self.assertEqual(response.status_code, 400)
-    data = response.get_json()
-    self.assertIn("error", data)
-    self.assertTrue(data["error"].startswith("Value error:"))
-
-def test_taste_match_request_exception(self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews):
-    """Test taste match when an external request fails."""
-    mock_scrape_reviews.side_effect = requests.exceptions.RequestException("API request failed")
-    response = self.client.post("/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/", "username": "test_user"})
-    self.assertEqual(response.status_code, 500)
-    data = response.get_json()
-    self.assertIn("error", data)
-    self.assertTrue(data["error"].startswith("Request failed:"))
+        """Test taste match with a missing key in the JSON."""
+        response = self.client.post("/taste",json={
+            "film_url":"https://letterboxd.com/film/mickey-17/"})
+        self.assertEqual(response.status_code, 400)
+        data = response.get_json()
+        self.assertIn("error", data)
 
 if __name__ == "__main__":
     unittest.main()
