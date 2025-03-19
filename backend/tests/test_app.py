@@ -165,5 +165,31 @@ def test_taste_match_missing_film_url(self):
     data = response.get_json()
     self.assertIn("error", data)
 
+def test_taste_match_key_error(self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews):
+    """Test taste match with a missing key in the JSON payload."""
+    response = self.client.post("/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/"})
+    self.assertEqual(response.status_code, 400)
+    data = response.get_json()
+    self.assertIn("error", data)
+    self.assertEqual(data["error"], "username is required")
+    
+def test_taste_match_value_error(self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews):
+    """Test taste match when a ValueError is raised."""
+    mock_scrape_reviews.side_effect = ValueError("Invalid film URL format")
+    response = self.client.post("/taste", json={"film_url": "invalid_url", "username": "test_user"})
+    self.assertEqual(response.status_code, 400)
+    data = response.get_json()
+    self.assertIn("error", data)
+    self.assertTrue(data["error"].startswith("Value error:"))
+
+def test_taste_match_request_exception(self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews):
+    """Test taste match when an external request fails."""
+    mock_scrape_reviews.side_effect = requests.exceptions.RequestException("API request failed")
+    response = self.client.post("/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/", "username": "test_user"})
+    self.assertEqual(response.status_code, 500)
+    data = response.get_json()
+    self.assertIn("error", data)
+    self.assertTrue(data["error"].startswith("Request failed:"))
+
 if __name__ == "__main__":
     unittest.main()
