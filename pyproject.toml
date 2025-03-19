@@ -35,5 +35,5 @@ dynamic = ["dependencies"]
 dependencies = {file = ["requirements.txt"]}
 
 # Where can someone find out more about your project?
-[project.urls]
+#[project.urls]
 Homepage = "https://github.com/riyosha/letterboxd-review-analyzer"
