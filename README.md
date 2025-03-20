@@ -129,12 +129,6 @@ make init
 ---
 ## **Generating API Keys**
 
-Run:
-```bash
-make setup-env
-```
-to setup backend/.env template file for your API keys.
-
 Please follow this link to generate 6 Gemini API keys: https://ai.google.dev/gemini-api/docs/api-key 
 
 Update backend/.env with your actual API keys.
