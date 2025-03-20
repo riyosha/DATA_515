@@ -112,7 +112,6 @@ class LetterboxdReviewAnalyzer:
             genai.configure(api_key=api_key2)
             model2 = genai.GenerativeModel("gemini-2.0-flash")
 
-
             prompt = f"""
                         The following is a collection of movie reviews from Letterboxd. 
                         Each new review starts with ">>>".
