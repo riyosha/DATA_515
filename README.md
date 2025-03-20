@@ -54,51 +54,103 @@ The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool design
 
 ## **Repository Structure**  
 ```plaintext
-.
+├── LICENSE
 ├── Makefile
 ├── README.md
 ├── backend
-│   ├── Dockerfile
-│   ├── environment.yml
-│   ├── src
-│   │   ├── helpers
-│   │   │   ├── letterboxd_analyzers.py
-│   │   │   ├── roast_generator.py
-│   │   │   ├── scrapers.py
-│   │   │   ├── scrapers_roast.py
-│   │   └── main.py
-│   ├── tests
-│   │   ├── helpers
-│   │   │   ├── test_letterboxd_analyzers.py
-│   │   │   ├── test_scrapers.py
-│   │   ├── test_main.py
-│   │   ├── test_roast_generator.py
-│   │   ├── test_scrapers_roast.py
+│   ├── Dockerfile
+│   ├── MANIFEST.in
+│   ├── dist
+│   │   ├── letterboxd_analyzer-1.0.0-py3-none-any.whl
+│   │   └── letterboxd_analyzer-1.0.0.tar.gz
+│   ├── environment.yml
+│   ├── pyproject.toml
+│   ├── requirements.txt
+│   ├── src
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   │   └── app.cpython-313.pyc
+│   │   ├── app.py
+│   │   └── helpers
+│   │       ├── __pycache__
+│   │       │   ├── letterboxd_analyzers.cpython-313.pyc
+│   │       │   ├── roast_generator.cpython-313.pyc
+│   │       │   ├── scrapers.cpython-313.pyc
+│   │       │   └── scrapers_roast.cpython-313.pyc
+│   │       ├── letterboxd_analyzers.py
+│   │       ├── roast_generator.py
+│   │       ├── scrapers.py
+│   │       └── scrapers_roast.py
+│   └── tests
+│       ├── __init__.py
+│       ├── helpers
+│       │   ├── __init__.py
+│       │   ├── test_letterboxd_analyzers.py
+│       │   └── test_scrapers.py
+│       ├── test_app.py
+│       ├── test_roast_generator.py
+│       └── test_scrapers_roast.py
 ├── docker-compose.dev.yml
 ├── docker-compose.yml
 ├── docs
-│   ├── Functional_Specification.md
-│   ├── component_specification.md
-│   ├── installation.md
-│   ├── milestones.md
-│   ├── technology_review
-│   │   ├── demo.md
-│   │   ├── libraries_overview.md
-├── frontend
-│   ├── Dockerfile
-│   ├── README.md
-│   ├── package.json
-│   ├── src
-│   │   ├── App.jsx
-│   │   ├── MovieReview
-│   │   │   ├── Error.jsx
-│   │   │   ├── Movie.jsx
-│   │   │   ├── MovieInfo.jsx
-│   │   │   ├── Video.jsx
-│   │   ├── Roast
-│   │   │   ├── Roast.jsx
-│   │   ├── main.jsx
-└── vite.config.js
+│   ├── Functional_Specification.md
+│   ├── assets
+│   │   ├── Letterboxd review Analyzer.pdf
+│   │   ├── Letterboxd review Analyzer.pptx
+│   │   ├── demo1.mp4
+│   │   └── video_preview.gif
+│   ├── component_specification.md
+│   ├── milestones.md
+│   ├── technology_review
+│   │   ├── demo.md
+│   │   └── libraries_overview.md
+│   └── video_preview.gif
+├── example
+│   └── demo1.md
+└── frontend
+    ├── Dockerfile
+    ├── README.md
+    ├── eslint.config.js
+    ├── index.html
+    ├── node_modules
+    ├── package-lock.json
+    ├── package.json
+    ├── public
+    │   └── videos
+    │       └── go-to-the-lobby.mp4
+    ├── src
+    │   ├── Landing.css
+    │   ├── Landing.jsx
+    │   ├── MovieReview
+    │   │   ├── AspectGraph.jsx
+    │   │   ├── Error.jsx
+    │   │   ├── Movie.css
+    │   │   ├── Movie.jsx
+    │   │   ├── MovieInfo.css
+    │   │   ├── MovieInfo.jsx
+    │   │   ├── VibeCheck.css
+    │   │   ├── VibeCheck.jsx
+    │   │   ├── Video.css
+    │   │   ├── Video.jsx
+    │   │   └── __tests__
+    │   │       ├── AspectGraph.test.jsx
+    │   │       ├── Error.test.jsx
+    │   │       ├── Movie.test.jsx
+    │   │       ├── MovieInfo.test.jsx
+    │   │       ├── VibeCheck.test.jsx
+    │   │       └── Video.test.jsx
+    │   ├── Roast
+    │   │   ├── Roast.css
+    │   │   ├── Roast.jsx
+    │   │   └── __tests__
+    │   │       └── Roast.test.jsx
+    │   ├── __tests__
+    │   │   ├── Landing.test.jsx
+    │   │   └── main.test.jsx
+    │   ├── index.css
+    │   ├── main.jsx
+    │   └── setupTests.js
+    └── vite.config.js
 ```
 
 ---
