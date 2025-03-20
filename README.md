@@ -43,7 +43,8 @@ TBD (if hosted)
 - [Installation](#installation)
 - [Generating Gemini API Keys](#generating-api-keys)
 - [Running the Project](#running-the-project) 
-- [Environment, Tests and Coverage](#environment)  
+- [Environment, Tests and Coverage](#environment)
+- [Packaging and Distribution](#distribution)  
 - [Data](#data)  
 - [Application](#application)  
 - [Examples](#examples)  
@@ -109,6 +110,8 @@ Docker: https://www.docker.com/
 
 Git: https://git-scm.com/downloads
 
+Make: The GNU command - if on windows may need to install a Windows Subsystem for Linux
+
 ## **Installation** 
 
 To clone this repository, run:  
@@ -145,8 +148,10 @@ open -a Docker
 make build
 make dev
 ```
+On a new terminal run make ps to ensure both the backend and frontend docker containers are running
 
-Use the frontend link to launch the website!
+Use the frontend link to launch the website! 
+`http://localhost:5173`
 
 ---
 
@@ -155,6 +160,11 @@ Use the frontend link to launch the website!
 To individually setup environments and run tests for frontend and backend, please refer to commands listed by `make help`.
 
 ---
+
+## **Packaging and Distribution**
+
+We only setup packaging and distribution for the Python backend server portion of our application.
+To build the backend and generate a distributable tarbell file and wheel file all you need to do is run `make build-backend-package`
 
 ## **Data Sources**  
 
