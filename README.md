@@ -9,7 +9,8 @@ The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool design
 
 ### **Key Features**  
 - **Movie Analysis**: Generates a **sentiment-based summary** of real-time Letterboxd reviews.  
-- **Aspect-Based Sentiment Analysis**: Extracts **key movie aspects** such as acting, direction, cinematography, and humor.  
+- **Aspect-Based Sentiment Analysis**: Extracts **key movie aspects** such as acting, direction, cinematography, and humor.
+- **Vibe Checker**: Compares a Letterboxd user's reviews and a movie's reviews to analyze what a user might like/dislike about the movie.
 - **User Roast Generator**: Scrapes **Letterboxd profile data** to deliver a **hilarious roast** based on viewing habits and ratings.  
 
 ---
