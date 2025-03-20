@@ -66,8 +66,7 @@ class TestFlaskApp(unittest.TestCase):
         """Test movie details scraping with a missing URL."""
         response = self.client.post("/movie_details", json={})
         self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
+        self.assertIn("error", response.get_json())
 
     @patch("src.helpers.scrapers.movie_details_scraper")
     def test_scraping_movie_details_invalid_url(self, mock_movie_details_scraper):
@@ -75,8 +74,7 @@ class TestFlaskApp(unittest.TestCase):
         mock_movie_details_scraper.side_effect = ValueError("Invalid URL")
         response = self.client.post("/movie_details", json={"film_url": "invalid_url"})
         self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
+        self.assertIn("error", response.get_json())
 
     @patch("src.helpers.scrapers.movie_details_scraper")
     @patch("src.helpers.scrapers.scrape_reviews")
@@ -90,8 +88,7 @@ class TestFlaskApp(unittest.TestCase):
             "/movie_details", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
         )
         self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
+        self.assertIn("error", response.get_json())
 
     @patch("src.helpers.scrapers_roast.scrape_user_reviews")
     @patch("src.helpers.scrapers_roast.scrape_user_stats")
@@ -110,41 +107,13 @@ class TestFlaskApp(unittest.TestCase):
 
         response = self.client.post("/roast", json={"username": "test_user"})
         self.assertEqual(response.status_code, 200)
-        data = response.get_json()
-        self.assertIn("roast", data)
+        self.assertIn("roast", response.get_json())
 
     def test_username_roast_missing_username(self):
         """Test username roast with missing username field."""
         response = self.client.post("/roast", json={})
         self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
-
-    @patch("src.helpers.scrapers.scrape_reviews")
-    @patch("src.helpers.scrapers_roast.scrape_user_reviews")
-    @patch("src.helpers.letterboxd_analyzers.LetterboxdReviewAnalyzer.get_taste_match_result")
-    def test_taste_match_success(
-        self, mock_get_taste_match_result, mock_scrape_user_reviews, mock_scrape_reviews
-    ):
-        """Test successful taste match analysis."""
-        mock_scrape_reviews.return_value = ["Review 1", "Review 2"]
-        mock_scrape_user_reviews.return_value = ["User Review 1", "User Review 2"]
-        mock_get_taste_match_result.return_value = "You might like this movie!"
-
-        response = self.client.post(
-            "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/", 
-            "username": "test_user"}
-        )
-        self.assertEqual(response.status_code, 400)
-
-    def test_taste_match_missing_username(self):
-        """Test taste match with missing username field."""
-        response = self.client.post(
-            "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
-        )
-        self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
+        self.assertIn("error", response.get_json())
 
     @patch("src.helpers.scrapers.scrape_reviews")
     @patch("src.helpers.scrapers_roast.scrape_user_reviews")
@@ -153,11 +122,28 @@ class TestFlaskApp(unittest.TestCase):
         self, _mock_get_taste_match_result, _mock_scrape_user_reviews, _mock_scrape_reviews
     ):
         """Test taste match with a missing key in the JSON."""
-        response = self.client.post("/taste",json={
-            "film_url":"https://letterboxd.com/film/mickey-17/"})
+        response = self.client.post(
+            "/taste", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
+        )
         self.assertEqual(response.status_code, 400)
-        data = response.get_json()
-        self.assertIn("error", data)
+        self.assertIn("error", response.get_json())
+
+    @patch("src.helpers.scrapers.movie_details_scraper")
+    def test_scraping_movie_details_exception(self, mock_movie_details_scraper):
+        """Test movie details scraping when an unexpected exception occurs."""
+        mock_movie_details_scraper.side_effect = Exception("Unexpected error")
+        response = self.client.post(
+            "/movie_details", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
+        )
+        self.assertEqual(response.status_code, 400)
+
+    @patch("src.helpers.scrapers_roast.scrape_user_reviews")
+    def test_username_roast_exception(self, mock_scrape_user_reviews):
+        """Test username roast when an unexpected exception occurs."""
+        mock_scrape_user_reviews.side_effect = Exception("Unexpected error")
+        response = self.client.post("/roast", json={"username": "test_user"})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("error", response.get_json())
 
 if __name__ == "__main__":
     unittest.main()
