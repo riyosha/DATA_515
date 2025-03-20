@@ -111,7 +111,7 @@ class LetterboxdReviewAnalyzer:
                         write in a manner similar to the reviews provided. Keep the summary *stricttly* under 200 words.
                         - Use only the reviews provided
                         - you cannot access real time information about the movies
-                        - avoid formatting like asterisks
+                        - STRICTLY avoid formatting like bold, italics. No * or _.
                         - avoid too many pop cultural references, not everyone will understand them
 
                         Reviews:
@@ -299,7 +299,7 @@ class LetterboxdReviewAnalyzer:
                         Keep your response brief and *STRCITLY* under 200 words and don't give spoilers.
                         Address it to the user themself in 2nd person.
 
-                        
+                        - STRICTLY avoid formatting like bold, italics. No * or _.
 
                         movie_reviews:
                         {movie_reviews}
