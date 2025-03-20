@@ -1,24 +1,77 @@
-# Technology Review
+# **Technology Review**
 
-## Background
+## **Background**  
 
-This project aims to create a tool to generate (i) a summary of the most popular reviews of a movie on Letterboxd to encapsulate not just the plot and themes but also the emotions elicited in viewers and (ii) a visualization demonstrating the top aspects mentioned in the reviews and their sentiment analysis.
+This project aims to develop a tool that:  
+1. **Generates meaningful summaries** of the most popular Letterboxd movie reviews, capturing key themes, audience reactions, and emotions.  
+2. **Creates a visualization** highlighting the most frequently mentioned aspects (e.g., cinematography, acting, direction) and their sentiment analysis.  
+3. **Produces personalized roasts** of a Letterboxd user’s viewing habits based on their **ratings, most-watched genres, actors, and reviewing patterns**.  
 
-To achieve this, we had to explore different generative AI and NLP technologies available.
+To achieve these goals, different **Generative AI, NLP, and Web Scraping** techniques were explored, evaluating their **speed, accuracy, scalability, and integration feasibility**.
 
-## (i) Summarization:
+---
 
-To generate a meaningful summary of the most popular reviews of a movie, we explored two different approaches: Mistral 7B and Google Gemini Pro.
+## **(i) Web Scraping for Data Extraction**  
 
-### Mistral 7B (via Hugging Face Transformers)
-Mistral 7B is an open-weight transformer model optimized for efficiency and performance. We used the Hugging Face transformers library to generate summaries, but the inference time was too slow, taking several seconds per review, which made it impractical for real-time processing. While the model allowed full control over fine-tuning and customization, achieving high-quality summaries required extensive optimization. Maintaining the necessary infrastructure for efficient inference also increased complexity. These factors made Mistral 7B unsuitable for our needs.
+Since **Letterboxd does not provide an official API**, web scraping is used to extract movie reviews and user profile data for analysis.  
 
-### Google Generative AI Python SDK (for Gemini Pro)
-Google Gemini Pro is a generative AI model optimized for natural language processing. We used its Python SDK to generate summaries with a structured prompt that guided the model to focus on key themes, emotions, and audience reactions. This approach produced fluent, coherent summaries with minimal post-processing. The inference time was nearly instant, making it efficient for handling large volumes of reviews. While the response format varied at times, careful prompt engineering and targeted error handling ensured consistent outputs. Given its speed, high-quality summaries, and low infrastructure overhead, Gemini Pro was the best choice for our needs.
+### **1. BeautifulSoup for Movie Reviews (Summarization Feature)**  
+To generate meaningful **summaries** of a movie’s **top reviews**, 300 of the most popular Letterboxd reviews are scraped from the movie's page.  
+
+- **Technology Used:** `BeautifulSoup` (Python library for HTML parsing).  
+- **Scraped Data:**  
+  - **Movie title, director, year, genres, and synopsis**  
+  - **Top 300 user reviews** (review text, user rating)  
+
+- **How the Data is Used:**  
+  - The **scraped reviews** are passed to **Gemini 1.5 Pro** for **summarization** and **aspect-based sentiment analysis**.  
+  - The extracted **sentiment data** is then used to generate **visual insights** about audience reactions.  
+
+---
+
+### **2. BeautifulSoup for User Profiles (Roasting Feature)**  
+For **personalized roasting**, multiple data sources from a user's **Letterboxd profile** are scraped and combined into a unified dataset.
+
+- **Technology Used:** `BeautifulSoup` for scraping and `pandas` for data processing.  
+- **Scraped Data Sources:**  
+  - **User Reviews** (`letterboxd.com/{username}/films/reviews/`)  
+    - Movies reviewed, ratings given, review text.  
+  - **User Stats** (`letterboxd.com/{username}/stats/`)  
+    - Most-watched genres, actors, directors, total watch hours, longest watch streaks.  
+  - **Profile Activity Logs**  
+    - Identifies trends in **rating behaviors**, **rewatch frequency**, and **genre obsession**.  
+
+- **How the Data is Used:**  
+  - **Data is merged** to **detect user patterns**, such as:  
+    - **Genre fixation** ("You’ve watched 95 percent horror movies this year. Everything okay?").  
+    - **Overrated favorites** ("Five rewatches of ‘Morbius’? That’s a commitment.").  
+    - **Pretentious or extreme ratings** ("A 1-star for ‘The Godfather’? Let’s talk.").  
+  - The **combined dataset** is passed to **Gemini 1.5 Pro**, which generates a **snarky AI-powered roast**.  
+
+---
+
+## **(ii) Summarization: Evaluating NLP Models for Movie Review Summaries**  
+
+To generate concise and meaningful summaries of **Letterboxd movie reviews**, two different approaches were explored:  
+
+### **1. Mistral 7B (via Hugging Face Transformers)**  
+Mistral 7B is an **open-weight transformer model** optimized for efficiency and performance. It was implemented using the **Hugging Face `transformers` library** to generate summaries. However, it presented several drawbacks:  
+
+- **Slow inference time**: Processing each review took **several seconds**, making it impractical for real-time summarization.  
+- **Fine-tuning complexity**: Achieving **high-quality summaries** required **significant fine-tuning**, increasing development time and complexity.  
+- **Infrastructure overhead**: Running Mistral **locally or on cloud infrastructure** required dedicated GPU resources.  
+
+### **2. Google Gemini Pro (via Generative AI Python SDK)**  
+Gemini Pro, a **cloud-based AI model by Google**, offered an alternative approach:  
+
+- **Fast inference time**: **Near-instant response**, allowing real-time summary generation.  
+- **High-quality output**: Fluent and coherent summaries with **minimal post-processing**.  
+- **No fine-tuning required**: Well-optimized for **natural language generation** without requiring additional training.  
+- **Scalability**: API-based access enabled effortless **scaling without infrastructure overhead**.  
 
 | Feature               | Mistral 7B | Google Gemini Pro |
 |-----------------------|-----------|------------------|
-| **Author**           | Mistral AI | Google          |
+| **Author**           | Mistral AI | Google |
 | **Summary**         | Open-source LLM | API-based generative AI for text processing |
 | **Fine-tuning**     | Required for optimal results | Not required |
 | **Inference Time**  | Too slow for real-time use | Nearly instant |
@@ -27,31 +80,51 @@ Google Gemini Pro is a generative AI model optimized for natural language proces
 | **Control**        | Full control over model and infrastructure | Dependent on Google's API policies |
 | **Scalability**    | Infrastructure-dependent, complex to scale | Easy to scale with API-based access |
 
+---
 
-## (ii) Top Aspects Visualization
+## **(iii) Aspect-Based Sentiment Analysis: Extracting Top Aspects from Reviews**  
 
-To extract the top aspects from a list of reviews, we explored three options:
+To extract **key aspects** (e.g., cinematography, acting, music) and their **sentiment polarity**, three options were explored:  
 
-### Finetuning Hugging Face SetFit ABSA model using few-shot learning
-We used Hugging Face’s SetFit library that takes individual sentences as input and outputs extracted aspects along with their predicted sentiment (positive/neutral/negative). This library was suited for few-shot learning, so we created a manually labelled training data set of ~ 50 lines (extracted from actual reviews) with their relevant aspects and sentiments to finetune the model to extract cinematic aspects from movie reviews.
+| Feature                 | Hugging Face SetFit ABSA | Gemini 1.5 Pro |
+|-------------------------|-------------------------|---------------|
+| **Author**             | Hugging Face             | Google |
+| **Summary**            | Few-shot learning ABSA model | API-based generative AI for text processing |
+| **Fine-tuning**        | Required (small dataset) | Not required |
+| **Inference Time**     | Too slow (~1 second per line) | Immediate |
+| **Output Format**      | Dictionary               | String |
+| **Error Handling**     | Predictable, fixed       | Requires structured prompt engineering |
 
-While the prediction accuracy seemed promising on a small manually created testing set, the inference time was too long - ~ 1 second per sentence, which is impractical when processing hundreds of reviews for quick results.
+- **Decision:** Selected **Gemini 1.5 Pro** for its **speed and accuracy**.  
 
-### Google Generative AI Python SDK (for Gemini Pro)
-This approach mostly required intensive prompt engineering, followed by some text processing to extract data from the response provided by gemini. This method easily overcame the issue of long inference time, however, it needs much more rigorous error handling due to the unpredictable nature of gemini responses.
+---
 
-### Google Generative AI Python SDK (for Gemini 1.5 Pro)
-This approach was the same as the previous one, but this model is specially fine-tuned for text processing compared to multimodal processing, which is why we received much more nuanced and impressive results with this generative AI model. This is the option we finally picked.
+## **(iv) Roasting Feature: Generating Personalized, AI-Powered Roasts**  
 
-|                                | Hugging Face SetFit ABSA model | Gemini 1.5 Pro |
-|--------------------------------|--------------------------------|---------------|
-| **Author**                     | Hugging Face                   | Google        |
-| **Summary**                    | A library for few-shot text classification and aspect-based sentiment analysis. | Python SDK for interacting with Google's Gemini models, enabling text generation and understanding through API calls. |
-| **Fine tuning**                 | Few shot learning              | Not required/feasible on a small training set. |
-| **Inference time**              | Too long ~ 1 second per line   | Immediate     |
-| **Output format**               | Dictionary                     | String       |
-| **Error handling**              | Predictable, fixed             | Unpredictable due to variance in gemini responses |
+To generate **funny, engaging roasts** for Letterboxd users, two approaches were explored:  
 
-### The main challenges with Gemini 1.5 Pro are:
-- No control over the model changes its usage policies.
-- Unpredictable response format, which makes error handling more difficult.
+| Feature                | Rule-Based Templates | Gemini 1.5 Pro |
+|------------------------|---------------------|---------------|
+| **Approach**          | Heuristic-based text | AI-generated freeform roast |
+| **Creativity**        | Limited, predictable | High, dynamic |
+| **Scalability**       | Manual expansion required | Easily scales with more inputs |
+| **Personalization**   | Generic templates | User-specific, personalized roasts |
+| **Error Handling**    | Minimal required | Requires structured prompt engineering |
+
+- **Decision:** Selected **Gemini 1.5 Pro**, ensuring structured outputs through **prompt tuning and API constraints**.  
+
+---
+
+## **Conclusion: Selected Technologies**  
+
+| Feature                 | Selected Technology |
+|-------------------------|--------------------|
+| **Web Scraping**        | BeautifulSoup |
+| **Summarization**        | Google Gemini Pro |
+| **Aspect-Based Sentiment** | Google Gemini 1.5 Pro |
+| **Roasting Feature**     | Google Gemini 1.5 Pro |
+
+These choices ensure:  
+- **High-speed inference** for real-time processing.  
+- **Minimal infrastructure requirements** (API-based).  
+- **Scalability** without requiring fine-tuning.  
