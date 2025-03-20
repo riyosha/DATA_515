@@ -5,6 +5,7 @@ import Movie from '../Movie';
 import MovieInfo from '../MovieInfo';
 import AspectGraph from '../AspectGraph';
 import Error from '../Error';
+import VibeCheck from '../VibeCheck';
 import { useLocation } from 'react-router-dom';
 
 // Mock the react-router-dom useLocation hook
@@ -41,7 +42,20 @@ vi.mock('../Error', () => {
   };
 });
 
+vi.mock('../VibeCheck', () => {
+  return {
+    default: vi.fn(({ filmUrl }) => (
+      <div data-testid="vibe-check">
+        Vibe Check Component (filmUrl:{' '}
+        {filmUrl === undefined ? 'undefined' : filmUrl})
+      </div>
+    )),
+  };
+});
+
 describe('Movie Component', () => {
+  const mockSearchQuery = 'https://letterboxd.com/film/test-movie/';
+
   // Mock fetch before each test
   beforeEach(() => {
     global.fetch = vi.fn();
@@ -49,7 +63,7 @@ describe('Movie Component', () => {
 
     // Mock the useLocation hook to return a searchQuery
     useLocation.mockReturnValue({
-      state: { searchQuery: 'https://letterboxd.com/film/test-movie/' },
+      state: { searchQuery: mockSearchQuery },
     });
   });
 
@@ -318,5 +332,122 @@ describe('Movie Component', () => {
       'Thriller',
       'Horror',
     ]);
+  });
+
+  it('renders VibeCheck component with the correct filmUrl prop', async () => {
+    // Mock successful API response
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          movie_details: {
+            movie_name: 'Test Movie',
+            director: 'Test Director',
+            year: '2023',
+            genres: 'Action, Drama',
+            backdrop_image_url: 'test-image.jpg',
+            synopsis: 'Test synopsis',
+          },
+          summary: 'Test review',
+        }),
+    });
+
+    render(<Movie />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
+    });
+
+    // Check that VibeCheck is rendered
+    expect(screen.getByTestId('vibe-check')).toBeInTheDocument();
+
+    // Check that VibeCheck was called with the correct filmUrl prop
+    expect(VibeCheck).toHaveBeenCalled();
+
+    // Get the props passed to VibeCheck
+    const vibeCheckProps = VibeCheck.mock.calls[0][0];
+    expect(vibeCheckProps.filmUrl).toBe(mockSearchQuery);
+
+    // Verify the rendered text contains the correct filmUrl
+    expect(screen.getByTestId('vibe-check').textContent).toContain(
+      `filmUrl: ${mockSearchQuery}`
+    );
+  });
+
+  it('always renders VibeCheck component even when aspects are empty', async () => {
+    // Mock successful API response with no aspects data
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          movie_details: {
+            movie_name: 'Test Movie',
+            director: 'Test Director',
+            year: '2023',
+            genres: 'Action, Drama',
+            backdrop_image_url: 'test-image.jpg',
+            synopsis: 'Test synopsis',
+          },
+          summary: 'Test review',
+          aspects: [], // Empty aspects array
+        }),
+    });
+
+    render(<Movie />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
+    });
+
+    // AspectGraph should not be rendered
+    expect(screen.queryByTestId('aspect-graph')).not.toBeInTheDocument();
+
+    // VibeCheck should still be rendered
+    expect(screen.getByTestId('vibe-check')).toBeInTheDocument();
+  });
+
+  it('passes the correct searchQuery to VibeCheck when null (handles undefined values)', async () => {
+    // Mock the useLocation hook to return undefined searchQuery
+    useLocation.mockReturnValue({
+      state: { searchQuery: undefined },
+    });
+
+    // Mock successful API response
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          movie_details: {
+            movie_name: 'Test Movie',
+            director: 'Test Director',
+            year: '2023',
+            genres: 'Action, Drama',
+            backdrop_image_url: 'test-image.jpg',
+            synopsis: 'Test synopsis',
+          },
+          summary: 'Test review',
+        }),
+    });
+
+    render(<Movie />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.getByTestId('movie')).toBeInTheDocument();
+    });
+
+    // Check that VibeCheck is rendered with undefined filmUrl
+    expect(screen.getByTestId('vibe-check')).toBeInTheDocument();
+
+    // Get the props passed to VibeCheck
+    const vibeCheckProps = VibeCheck.mock.calls[0][0];
+    expect(vibeCheckProps.filmUrl).toBeUndefined();
+
+    // Verify the rendered text shows undefined filmUrl
+    expect(screen.getByTestId('vibe-check').textContent).toContain(
+      'filmUrl: undefined'
+    );
   });
 });
