@@ -112,6 +112,7 @@ class LetterboxdReviewAnalyzer:
                         - Use only the reviews provided
                         - you cannot access real time information about the movies
                         - STRICTLY avoid formatting like bold, italics. No * or _.
+                        - Only use alphanumeric characters or punctuation. No special characters.
                         - avoid too many pop cultural references, not everyone will understand them
 
                         Reviews:
@@ -300,6 +301,7 @@ class LetterboxdReviewAnalyzer:
                         Address it to the user themself in 2nd person.
 
                         - STRICTLY avoid formatting like bold, italics. No * or _.
+                        - Only use alphanumeric characters or punctuation. No special characters.
 
                         movie_reviews:
                         {movie_reviews}
