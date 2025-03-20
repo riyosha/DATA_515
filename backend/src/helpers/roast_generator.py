@@ -82,7 +82,9 @@ class LetterboxdRoastAnalyzer:
 
                       Here are their reviews , ratings and their stats:{user_data}
 
-                      Now, open with a devastating one-liner about their taste, then
+                      Your job is to analyze their film preferences but also to roast them.
+                      This summary should be informative and humorous.
+                      Open with a devastating one-liner about their taste, then
                       tear apart their worst ratings—mock the classic they unfairly
                       trashed or the embarrassing five-star they handed out. Drag their
                       genre obsession—do they live in horror? Worship romcoms? Are they
@@ -94,10 +96,12 @@ class LetterboxdRoastAnalyzer:
                       End by recommending a movie so painfully accurate it stings without using **,
                       the kind of film that perfectly sums up their questionable taste.
 
+
                       Absolutely no bold text and dont use ** ** ever, no bullet points, no structured
                       formatting—just a single, natural-flowing paragraph like a real, brutal, hilarious
                       film critique. Do not use Markdown, asterisks, or any formatting characters—output
                       must be plain text only.
+                      - Only use alphanumeric characters or punctuation. No special characters.
                   """
 
         response = model.generate_content(prompt)
