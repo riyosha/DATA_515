@@ -72,7 +72,7 @@ class LetterboxdRoastAnalyzer:
             RoastGenerationError: If the roast is too long or an error occurs.
         """
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        model = genai.GenerativeModel("gemini-2.0-flash")
 
         prompt = f""" You're a ruthless, wildly funny film critic, and your job is to
                       obliterate this user's Letterboxd taste in a way that's fast, savage,
