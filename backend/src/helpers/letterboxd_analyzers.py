@@ -65,7 +65,7 @@ class LetterboxdReviewAnalyzer:
         """
         try:
             genai.configure(api_key=api_key1)
-            model1 = genai.GenerativeModel("gemini-1.5-pro")
+            model1 = genai.GenerativeModel("gemini-2.0-flash")
 
             prompt = f"""
                         You are summarizing Letterboxd reviews.  Given a collection of reviews, create a short, 
@@ -110,7 +110,8 @@ class LetterboxdReviewAnalyzer:
         """
         try:
             genai.configure(api_key=api_key2)
-            model2 = genai.GenerativeModel("gemini-1.5-pro")
+            model2 = genai.GenerativeModel("gemini-2.0-flash")
+
 
             prompt = f"""
                         The following is a collection of movie reviews from Letterboxd. 
