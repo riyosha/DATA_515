@@ -182,8 +182,8 @@ The web application is built with **Flask (backend) and React (frontend)**.
 ---
 
 ## **Demo**  
+[![Watch the video](https://img.youtube.com/vi/h8JnYarm5BA/0.jpg)](https://www.youtube.com/watch?v=h8JnYarm5BA)
 
-[Watch the video](https://github.com/riyosha/letterboxd-review-analyzer/raw/main/docs/assets/demo1.mp4)
 
 ---
 
