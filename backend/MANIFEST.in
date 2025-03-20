@@ -1,0 +1,13 @@
+include README.md
+include LICENSE
+include src/*.py
+recursive-include src/helpers *.py
+recursive-include tests *.py
+
+# Exclude environment files and secrets
+exclude .env
+exclude *.yml
+exclude Dockerfile
+exclude .gitignore
+exclude *.pyc
+exclude __pycache__/

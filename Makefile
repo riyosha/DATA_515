@@ -1,4 +1,4 @@
-.PHONY: up down build rebuild logs ps help test test-frontend test-backend lint-frontend lint-backend lint shell-frontend shell-backend clean dev init setup-env
+.PHONY: up down build rebuild logs ps help test test-frontend test-backend lint-frontend lint-backend lint shell-frontend shell-backend clean dev init setup-env build-backend-package
 
 # Help command
 help:
@@ -26,6 +26,7 @@ help:
 	@echo "dev                - Start development mode with hot reloading"
 	@echo "init               - Initialize project (first-time setup)"
 	@echo "setup-env          - Create .env file from .env.template"
+	@echo "build-backend-package      - Build Python package for backend (sdist and wheel)"
 
 # Docker Compose commands
 up:
@@ -88,6 +89,10 @@ test: test-backend test-frontend
 coverage: coverage-backend coverage-frontend
 
 lint: lint-frontend lint-backend
+
+build-backend-package:
+	docker-compose exec backend conda run -n letterboxd python -m build
+	@echo "Package built successfully! Check the 'dist' directory."
 
 # Environment setup
 setup-env:
