@@ -15,8 +15,7 @@ The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool design
 
 ---
 
-## **Public Website**  
-TBD (if hosted)  
+## **Preview**  
 ![Video Preview](docs/assets/video_preview.gif)
 
 
@@ -182,9 +181,9 @@ The web application is built with **Flask (backend) and React (frontend)**.
 
 ---
 
-## **Examples**  
+## **Demo**  
 
-TBD (Add a link to a **demo video or screenshots** once available).  
+![Video Preview](docs/assets/demo1.mp4)  
 
 ---
 
