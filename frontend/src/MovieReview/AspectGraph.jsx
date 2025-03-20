@@ -63,7 +63,7 @@ const AspectGraph = ({ data }) => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Aspect Comparison</h2>
+      <h2 style={styles.title}>Top Aspects</h2>
       <div style={styles.chartContainer}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
