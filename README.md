@@ -17,7 +17,7 @@ The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool design
 
 ## **Public Website**  
 TBD (if hosted)  
-https://github.com/user-attachments/assets/a7a58111-89ec-4bc6-9792-b8c64c7f8930
+![Video Preview](docs/assets/video_preview.gif)
 
 
 ---
