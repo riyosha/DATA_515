@@ -6,7 +6,7 @@ const Landing = () => {
   const navigate = useNavigate();
   const placeholders = useMemo(
     () => [
-      'Enter a letterboxd url...',
+      'Enter a letterboxd url or username...',
       'Should you really watch that movie?',
       'Enter your letterboxd username...',
       "I won't be too harsh, I promise...",
@@ -81,7 +81,9 @@ const Landing = () => {
           <div className="circle circle-green"></div>
           <div className="circle circle-blue"></div>
         </div>
-        Is it Cinema?
+        <div>
+          Is it <i>cinema</i>?
+        </div>
       </div>
 
       <div className="search-container">

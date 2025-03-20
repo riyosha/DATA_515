@@ -23,19 +23,12 @@ const AspectGraph = ({ data }) => {
     }));
   };
 
-  // Get the maximum value to set the domain of the YAxis
-  const getMaxValue = () => {
-    let max = 0;
-    safeData.forEach(([, positive, negative]) => {
-      if (positive > max) max = positive;
-      if (negative > max) max = negative;
-    });
-    // Add some padding to the max value
-    return Math.ceil(max * 1.1);
-  };
-
   const chartData = transformData();
-  const maxValue = getMaxValue();
+
+  // Custom tooltip formatter to add % sign
+  const customTooltipFormatter = (value) => {
+    return `${value}%`;
+  };
 
   // Explicit styling to replace Tailwind classes
   const styles = {
@@ -77,12 +70,20 @@ const AspectGraph = ({ data }) => {
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#555" />
             <XAxis dataKey="aspect" stroke="#fff" />
-            <YAxis domain={[0, maxValue]} stroke="#fff" />
+            <YAxis
+              domain={[0, 100]}
+              stroke="#fff"
+              tickFormatter={customTooltipFormatter}
+            />
             <Tooltip
               contentStyle={{
                 backgroundColor: '#333',
                 color: '#fff',
                 border: 'none',
+              }}
+              formatter={(value, name) => {
+                // Return the value with % sign and preserve the name for the tooltip
+                return [`${value}%`, name === 'value1' ? 'Like' : 'Dislike'];
               }}
             />
             <Legend wrapperStyle={{ color: '#fff' }} />

@@ -41,7 +41,9 @@ describe('Landing Component', () => {
     render(<Landing />);
 
     // Check initial placeholder text
-    expect(screen.getByText(/Enter a letterboxd url/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Enter a letterboxd url or username/i)
+    ).toBeInTheDocument();
 
     // Fast-forward time to see placeholder change
     vi.advanceTimersByTime(10000); // Advance enough time for transition
@@ -54,7 +56,7 @@ describe('Landing Component', () => {
     render(<Landing />);
 
     // Get the initial placeholder
-    const placeholder = screen.getByText(/Enter a letterboxd url/i);
+    const placeholder = screen.getByText(/Enter a letterboxd url or username/i);
     expect(placeholder).toBeInTheDocument();
 
     // Focus the input
@@ -64,7 +66,7 @@ describe('Landing Component', () => {
     // Check if placeholder is hidden
     await waitFor(() => {
       expect(
-        screen.queryByText(/Enter a letterboxd url/i)
+        screen.queryByText(/Enter a letterboxd url or username/i)
       ).not.toBeInTheDocument();
     });
   });
