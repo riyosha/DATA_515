@@ -31,16 +31,37 @@ vi.mock('recharts', () => {
     XAxis: function MockXAxis({ dataKey }) {
       return <div data-testid="x-axis" data-key={dataKey}></div>;
     },
-    YAxis: function MockYAxis({ domain }) {
+    YAxis: function MockYAxis({ domain, tickFormatter }) {
       return (
-        <div data-testid="y-axis" data-domain={JSON.stringify(domain)}></div>
+        <div
+          data-testid="y-axis"
+          data-domain={JSON.stringify(domain)}
+          data-has-formatter={Boolean(tickFormatter).toString()}
+        ></div>
       );
     },
     CartesianGrid: function MockCartesianGrid() {
       return <div data-testid="cartesian-grid"></div>;
     },
-    Tooltip: function MockTooltip() {
-      return <div data-testid="tooltip"></div>;
+    Tooltip: function MockTooltip({ formatter }) {
+      // Test the formatter function with a sample value
+      let formattedValue = null;
+      let formattedName = null;
+
+      if (formatter) {
+        const result = formatter(75, 'value1');
+        formattedValue = result[0];
+        formattedName = result[1];
+      }
+
+      return (
+        <div
+          data-testid="tooltip"
+          data-has-formatter={Boolean(formatter).toString()}
+          data-formatted-value={formattedValue}
+          data-formatted-name={formattedName}
+        ></div>
+      );
     },
     Legend: function MockLegend() {
       return <div data-testid="legend"></div>;
@@ -79,15 +100,36 @@ describe('AspectGraph Component', () => {
     expect(chartData[1]).toEqual({ aspect: 'Acting', value1: 92, value2: 88 });
   });
 
-  it('calculates max value correctly with padding', () => {
+  it('sets Y-axis domain to fixed range of 0-100', () => {
     const { getByTestId } = render(<AspectGraph data={testData} />);
 
     // Get the domain from the YAxis component
     const yAxisDomain = getByTestId('y-axis').getAttribute('data-domain');
     const domain = JSON.parse(yAxisDomain);
 
-    // The max value should be 92 * 1.1 rounded up = 102
-    expect(domain[1]).toBe(102);
+    // The domain should be fixed at [0, 100]
+    expect(domain).toEqual([0, 100]);
+  });
+
+  it('has a Y-axis formatter to add percentage sign', () => {
+    const { getByTestId } = render(<AspectGraph data={testData} />);
+
+    // Check if the Y-axis has a formatter function
+    expect(getByTestId('y-axis')).toHaveAttribute('data-has-formatter', 'true');
+  });
+
+  it('has a tooltip formatter that adds percentage sign and preserves labels', () => {
+    const { getByTestId } = render(<AspectGraph data={testData} />);
+
+    // Check if the tooltip has a formatter function
+    const tooltip = getByTestId('tooltip');
+    expect(tooltip).toHaveAttribute('data-has-formatter', 'true');
+
+    // Check the formatted value has a % sign
+    expect(tooltip).toHaveAttribute('data-formatted-value', '75%');
+
+    // Check that the label is set to "Like" for value1
+    expect(tooltip).toHaveAttribute('data-formatted-name', 'Like');
   });
 
   it('handles empty data array', () => {
@@ -102,10 +144,10 @@ describe('AspectGraph Component', () => {
     const chartData = JSON.parse(chartDataAttr);
     expect(chartData).toHaveLength(0);
 
-    // Max value should be 0
+    // Domain should still be fixed at [0, 100]
     const yAxisDomain = getByTestId('y-axis').getAttribute('data-domain');
     const domain = JSON.parse(yAxisDomain);
-    expect(domain[1]).toBe(0);
+    expect(domain).toEqual([0, 100]);
   });
 
   it('handles null or undefined data', () => {

@@ -41,7 +41,9 @@ describe('Landing Component', () => {
     render(<Landing />);
 
     // Check initial placeholder text
-    expect(screen.getByText(/Enter a letterboxd url or username/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Enter a letterboxd url or username/i)
+    ).toBeInTheDocument();
 
     // Fast-forward time to see placeholder change
     vi.advanceTimersByTime(10000); // Advance enough time for transition
