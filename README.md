@@ -182,9 +182,6 @@ This project **scrapes data live** from **Letterboxd** instead of relying on sta
 
 The web application is built with **Flask (backend) and React (frontend)**.  
 
-### **Running Tests**
-
-
 ---
 
 ## **Examples**  
