@@ -4,6 +4,7 @@ import MovieInfo from './MovieInfo';
 import Video from './Video';
 import Error from './Error';
 import AspectGraph from './AspectGraph';
+import VibeCheck from './VibeCheck';
 import './Movie.css';
 
 const Movie = () => {
@@ -110,6 +111,9 @@ const Movie = () => {
               <AspectGraph data={movieData.aspects} />
             </div>
           )}
+
+          {/* VibeCheck component */}
+          <VibeCheck filmUrl={location.state?.searchQuery} />
         </div>
       </div>
     </div>

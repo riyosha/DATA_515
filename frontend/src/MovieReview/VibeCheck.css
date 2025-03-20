@@ -1,0 +1,90 @@
+.vibe-check-container {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  color: white;
+}
+
+.vibe-check-title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.vibe-check-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.vibe-check-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #333;
+  color: white;
+  font-size: 1rem;
+}
+
+.vibe-check-input::placeholder {
+  color: #aaa;
+}
+
+.vibe-check-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.vibe-check-button:hover {
+  background-color: #ff3333;
+}
+
+.vibe-check-button:disabled {
+  background-color: #777;
+  cursor: not-allowed;
+}
+
+.vibe-check-error {
+  color: #ff4d4d;
+  margin-bottom: 1rem;
+}
+
+.vibe-check-loading {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #ddd;
+}
+
+.vibe-check-result {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+}
+
+.vibe-check-result-title {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #ff4d4d;
+}
+
+.vibe-check-result-content {
+  line-height: 1.6;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.vibe-check-result-content p {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 1rem;
+}
