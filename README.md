@@ -2,6 +2,7 @@
 
 ![GitHub Actions Workflow](https://github.com/riyosha/DATA_515/actions/workflows/build_test.yml/badge.svg)
 ![Coverage Status](https://coveralls.io/repos/github/riyosha/DATA_515/badge.svg)
+[![code style: prettier](https://img.shields.io/badge/code%20style-prettier-F7B93E.svg)](https://github.com/prettier/prettier)
 
 ## Introduction  
 
@@ -15,8 +16,7 @@ The **Letterboxd Movie Analyzer & Roast Generator** is an AI-powered tool design
 
 ---
 
-## **Public Website**  
-TBD (if hosted)  
+## **Preview**  
 ![Video Preview](docs/assets/video_preview.gif)
 
 
@@ -192,9 +192,9 @@ The web application is built with **Flask (backend) and React (frontend)**.
 
 ---
 
-## **Examples**  
+## **Demo**  
+[![Watch the video](https://img.youtube.com/vi/h8JnYarm5BA/0.jpg)](https://www.youtube.com/watch?v=h8JnYarm5BA)
 
-TBD (Add a link to a **demo video or screenshots** once available).  
 
 ---
 

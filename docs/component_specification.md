@@ -33,5 +33,6 @@ Functionalities:
 Output: A React UI displaying a movie's summary based on popular reviews, the top aspects identfied in the reviews, and/or a roast based on a letterboxd user's profile data  
 
 
-![Blank diagram](https://github.com/user-attachments/assets/f0bbc4c1-1df7-4f72-b83f-11c139ef9eca)
+![image](https://github.com/user-attachments/assets/9400713e-e77a-4028-b897-46a4f502b692)
+
 
