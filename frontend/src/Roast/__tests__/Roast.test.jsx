@@ -14,6 +14,19 @@ vi.mock('../../MovieReview/Error', () => ({
   default: vi.fn(() => <div data-testid="error-component">Error Occurred</div>),
 }));
 
+// Mock setTimeout to speed up tests
+vi.mock('react', async () => {
+  const actual = await vi.importActual('react');
+  return {
+    ...actual,
+    // Override setTimeout for typewriter effect
+    setTimeout: vi.fn((callback) => {
+      callback(); // Execute callback immediately
+      return 123; // Return a fake timer ID
+    }),
+  };
+});
+
 // Mock fetch API
 global.fetch = vi.fn();
 
@@ -34,10 +47,12 @@ describe('Roast Component', () => {
     vi.clearAllMocks();
 
     // Mock successful API response by default
-    global.fetch.mockResolvedValue({
-      ok: true,
-      json: async () => mockRoastResponse,
-    });
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockRoastResponse),
+      })
+    );
   });
 
   afterEach(() => {
@@ -61,10 +76,12 @@ describe('Roast Component', () => {
 
   it('should render Error component when API request fails', async () => {
     // Mock a failed response
-    global.fetch.mockResolvedValue({
-      ok: false,
-      status: 500,
-    });
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 500,
+      })
+    );
 
     render(
       <MemoryRouter
@@ -79,8 +96,8 @@ describe('Roast Component', () => {
     // Wait for the Error component to be rendered
     await waitFor(() => {
       expect(Error).toHaveBeenCalled();
-      expect(screen.getByTestId('error-component')).toBeInTheDocument();
     });
+    expect(screen.getByTestId('error-component')).toBeInTheDocument();
   });
 
   it('should make API request with correct parameters', async () => {
@@ -95,12 +112,14 @@ describe('Roast Component', () => {
     );
 
     // Verify the fetch call
-    expect(global.fetch).toHaveBeenCalledWith('/api/roast', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ username: 'testuser' }),
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith('/api/roast', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: 'testuser' }),
+      });
     });
   });
 
@@ -117,11 +136,28 @@ describe('Roast Component', () => {
 
     // Wait for the title to appear
     await waitFor(() => {
-      expect(screen.getByText('THE ROAST OF TESTUSER')).toBeInTheDocument();
+      expect(screen.queryByText('THE ROAST OF TESTUSER')).not.toBeNull();
     });
   });
 
-  it('should handle typewriter effect phases', async () => {
+  it('should fall back to "UNKNOWN USER" when no username is provided', async () => {
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/roast', state: {} }]}>
+        <Routes>
+          <Route path="/roast" element={<Roast />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('THE ROAST OF UNKNOWN USER')).not.toBeNull();
+    });
+  });
+
+  it('should handle fetch errors gracefully', async () => {
+    // Mock a fetch that throws an error
+    global.fetch = vi.fn(() => Promise.reject(new Error('Network error')));
+
     render(
       <MemoryRouter
         initialEntries={[{ pathname: '/roast', state: mockLocation.state }]}
@@ -132,34 +168,39 @@ describe('Roast Component', () => {
       </MemoryRouter>
     );
 
-    // Just verify that the component renders initially with the right structure
-    await waitFor(
-      () => {
-        expect(screen.getByText('THE ROAST OF TESTUSER')).toBeInTheDocument();
-      },
-      { timeout: 3000 }
+    await waitFor(() => {
+      expect(Error).toHaveBeenCalled();
+    });
+    expect(screen.getByTestId('error-component')).toBeInTheDocument();
+  });
+
+  it('should handle empty response data', async () => {
+    // Mock an empty response
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({}),
+      })
     );
 
-    expect(true).toBe(true);
-  }, 10000); // Set test timeout to 10 seconds
-
-  // Simplified test for fallback username
-  it('should fall back to "UNKNOWN USER" when no username is provided', async () => {
-    render(
-      <MemoryRouter initialEntries={[{ pathname: '/roast', state: {} }]}>
+    const { container } = render(
+      <MemoryRouter
+        initialEntries={[{ pathname: '/roast', state: mockLocation.state }]}
+      >
         <Routes>
           <Route path="/roast" element={<Roast />} />
         </Routes>
       </MemoryRouter>
     );
 
-    await waitFor(
-      () => {
-        expect(
-          screen.getByText('THE ROAST OF UNKNOWN USER')
-        ).toBeInTheDocument();
-      },
-      { timeout: 3000 }
-    );
-  }, 10000);
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByTestId('video-component')).not.toBeInTheDocument();
+    });
+
+    // Check that the component structure exists
+    expect(container.querySelector('.roast-main-container')).not.toBeNull();
+    expect(container.querySelector('.roast-content')).not.toBeNull();
+    expect(container.querySelector('.roast-title')).not.toBeNull();
+  });
 });
