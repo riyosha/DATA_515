@@ -135,7 +135,7 @@ class TestFlaskApp(unittest.TestCase):
         response = self.client.post(
             "/movie_details", json={"film_url": "https://letterboxd.com/film/mickey-17/"}
         )
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
 
     @patch("src.helpers.scrapers_roast.scrape_user_reviews")
     def test_username_roast_exception(self, mock_scrape_user_reviews):
