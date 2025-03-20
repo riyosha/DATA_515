@@ -104,6 +104,7 @@ TBD (if hosted)
 Please have the latest versions of Docker and Git installed on your local system.
 
 Docker: https://www.docker.com/
+
 Git: https://git-scm.com/downloads
 
 ## **Installation** 
