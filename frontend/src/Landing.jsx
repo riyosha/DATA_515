@@ -81,7 +81,9 @@ const Landing = () => {
           <div className="circle circle-green"></div>
           <div className="circle circle-blue"></div>
         </div>
-        Is it Cinema?
+        <div>
+          Is it <i>cinema</i>?
+        </div>
       </div>
 
       <div className="search-container">
